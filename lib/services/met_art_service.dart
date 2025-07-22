@@ -8,37 +8,45 @@ class MetArtService {
 
   Future<Artwork?> getRandomArtwork() async {
     try {
-      // 1. Search for image-enabled objects
-      final searchRes = await http.get(Uri.parse(
-        'https://collectionapi.metmuseum.org/public/collection/v1/search?hasImages=true&q=*'
-      ));
+      // Step 1: Search for artworks with images and use a more specific query
+      final searchRes = await http.get(
+        Uri.parse(
+          'https://collectionapi.metmuseum.org/public/collection/v1/search?hasImages=true&q=painting',
+        ),
+      );
       if (searchRes.statusCode != 200) return null;
 
       final searchJson = jsonDecode(searchRes.body);
       final List<dynamic>? objectIDs = searchJson['objectIDs'];
       if (objectIDs == null || objectIDs.isEmpty) return null;
 
-      // 2. Pick one ID randomly
-      final id = objectIDs[_random.nextInt(objectIDs.length)];
+      // Step 2: Try up to 10 times to find a valid artwork with image
+      for (int i = 0; i < 10; i++) {
+        final id = objectIDs[_random.nextInt(objectIDs.length)];
 
-      // 3. Fetch object data
-      final objectRes = await http.get(Uri.parse(
-        'https://collectionapi.metmuseum.org/public/collection/v1/objects/$id'
-      ));
-      if (objectRes.statusCode != 200) return null;
+        final objectRes = await http.get(
+          Uri.parse(
+            'https://collectionapi.metmuseum.org/public/collection/v1/objects/$id',
+          ),
+        );
+        if (objectRes.statusCode != 200) continue;
 
-      final obj = jsonDecode(objectRes.body);
-      final imageUrl = obj['primaryImage'] as String?;
-      if (imageUrl == null || imageUrl.isEmpty) return null;
+        final obj = jsonDecode(objectRes.body);
+        final imageUrl = obj['primaryImageSmall'] ?? obj['primaryImage'];
+        if (imageUrl == null || imageUrl.isEmpty) continue;
 
-      return Artwork(
-        title: obj['title'] ?? 'Untitled',
-        artist: obj['artistDisplayName'] ?? 'Unknown Artist',
-        imageUrl: imageUrl,
-        link: obj['objectURL'] ?? '',
-        description: obj['objectDate'] ?? '',
-        id: obj['objectID'].toString(),
-      );
+        return Artwork(
+          title: obj['title'] ?? 'Untitled',
+          artist: obj['artistDisplayName'] ?? 'Unknown Artist',
+          imageUrl: imageUrl,
+          link: obj['objectURL'] ?? '',
+          description: '',
+          id: obj['objectID'].toString(),
+          date: obj['objectDate'] ?? '', // Optional date field
+        );
+      }
+
+      return null;
     } catch (e) {
       return null;
     }

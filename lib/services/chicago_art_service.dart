@@ -35,6 +35,7 @@ class ChicagoArtService {
           link: "https://www.artic.edu/artworks/${art['id']}",
           description: art['short_description'] ?? '',
           id: art['id'].toString(),
+          date: art['date'] ?? '', // Optional date field
         );
 
         return artwork;

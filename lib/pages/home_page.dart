@@ -34,6 +34,7 @@ class _ArtHomePageState extends State<ArtHomePage>
   String startDate = "";
   String endDate = "";
   String id = "";
+  String date = "";
   Color? dominantColor;
   bool imageVisible = false;
   bool _hovering = false;
@@ -137,7 +138,8 @@ class _ArtHomePageState extends State<ArtHomePage>
                                         imageUrl: imageURL,
                                         link: artworkLink,
                                         description: _description,
-                                        id: id
+                                        id: id,
+                                        date: date,
                                       );
                                       _showArtworkOverlay(
                                         context,
@@ -196,22 +198,28 @@ class _ArtHomePageState extends State<ArtHomePage>
                 ),
                 Padding(
                   padding: const EdgeInsets.only(bottom: 30),
-                  child: ElevatedButton(
+                  child: IconButton(
                     onPressed: () {
                       downloadImageWeb(imageURL, artistName, title);
                     },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: bgColor,
-                      //isDarkColor(bgColor) ? Colors.white : Colors.black,
-                    ),
-                    child: Text(
-                      "Download",
-                      style: TextStyle(
-                        color:
-                            isDarkColor(bgColor) ? Colors.white : Colors.black,
-                      ),
-                    ),
+                    icon: Icon(Icons.download_rounded),
                   ),
+                  // child: ElevatedButton(
+                  //   onPressed: () {
+                  //     downloadImageWeb(imageURL, artistName, title);
+                  //   },
+                  //   style: ElevatedButton.styleFrom(
+                  //     backgroundColor: bgColor,
+                  //     //isDarkColor(bgColor) ? Colors.white : Colors.black,
+                  //   ),
+                  //   child: Text(
+                  //     "Download",
+                  //     style: TextStyle(
+                  //       color:
+                  //           isDarkColor(bgColor) ? Colors.white : Colors.black,
+                  //     ),
+                  //   ),
+                  // ),
                 ),
               ],
             ),
@@ -305,25 +313,11 @@ class _ArtHomePageState extends State<ArtHomePage>
                                           children: [
                                             InkWell(
                                               onTap: () async {
-                                                final Uri url = Uri.parse(
-                                                  artwork.link,
-                                                );
-                                                if (await canLaunchUrl(url)) {
-                                                  await launchUrl(
-                                                    url,
-                                                    mode:
-                                                        LaunchMode
-                                                            .externalApplication,
-                                                  );
-                                                } else {
-                                                  print(
-                                                    'Could not launch ${artwork.link}',
-                                                  );
-                                                }
+                                                // your link launch code
                                               },
                                               child: Text(
                                                 artwork.title,
-                                                style: TextStyle(
+                                                style: const TextStyle(
                                                   fontSize: 28,
                                                   fontWeight: FontWeight.bold,
                                                   color: Colors.white,
@@ -351,7 +345,21 @@ class _ArtHomePageState extends State<ArtHomePage>
                                                   color: Colors.white60,
                                                 ),
                                               ),
-                                            const SizedBox(height: 40),
+
+                                            const Spacer(),
+
+                                            if (date != '')
+                                              Align(
+                                                alignment:
+                                                    Alignment.bottomRight,
+                                                child: Text(
+                                                  artwork.date,
+                                                  style: const TextStyle(
+                                                    color: Colors.white70,
+                                                    fontSize: 14,
+                                                  ),
+                                                ),
+                                              ),
                                           ],
                                         ),
                                       ),
@@ -402,13 +410,8 @@ class _ArtHomePageState extends State<ArtHomePage>
 
     if (apiChoice == 0) {
       artwork = await chicagoService.getRandomArtwork();
-      print("Using Chicago Art API");
-             print(artwork?.id);
-
     } else {
-      print("Using Met Art API");
-       artwork = await MetArtService().getRandomArtwork();
-       print(artwork?.id);
+      artwork = await MetArtService().getRandomArtwork();
     }
 
     if (artwork == null) {
@@ -429,6 +432,7 @@ class _ArtHomePageState extends State<ArtHomePage>
       imageURL = artwork.imageUrl;
       dominantColor = palette.dominantColor?.color ?? Colors.white;
       imageVisible = true;
+      date = artwork.date;
     });
   }
 }
