@@ -204,22 +204,6 @@ class _ArtHomePageState extends State<ArtHomePage>
                     },
                     icon: Icon(Icons.download_rounded),
                   ),
-                  // child: ElevatedButton(
-                  //   onPressed: () {
-                  //     downloadImageWeb(imageURL, artistName, title);
-                  //   },
-                  //   style: ElevatedButton.styleFrom(
-                  //     backgroundColor: bgColor,
-                  //     //isDarkColor(bgColor) ? Colors.white : Colors.black,
-                  //   ),
-                  //   child: Text(
-                  //     "Download",
-                  //     style: TextStyle(
-                  //       color:
-                  //           isDarkColor(bgColor) ? Colors.white : Colors.black,
-                  //     ),
-                  //   ),
-                  // ),
                 ),
               ],
             ),
@@ -313,7 +297,22 @@ class _ArtHomePageState extends State<ArtHomePage>
                                           children: [
                                             InkWell(
                                               onTap: () async {
-                                                // your link launch code
+                                                final Uri url = Uri.parse(
+                                                  artworkLink,
+                                                );
+                                                if (await canLaunchUrl(url)) {
+                                                  await launchUrl(
+                                                    url,
+                                                    mode:
+                                                        LaunchMode
+                                                            .externalApplication,
+                                                  );
+                                                } else {
+                                                  // Handle error, e.g., show a message
+                                                  print(
+                                                    'Could not launch $url',
+                                                  );
+                                                }
                                               },
                                               child: Text(
                                                 artwork.title,
@@ -404,11 +403,14 @@ class _ArtHomePageState extends State<ArtHomePage>
 
     await Future.delayed(const Duration(milliseconds: 300));
 
-    final int apiChoice = randomNum.nextInt(2); // 0 or 1
+
+    //TODO revert when done testing
+    final int apiChoice = 0;//randomNum.nextInt(2); // 0 or 1
     final ChicagoArtService chicagoService = ChicagoArtService();
     Artwork? artwork;
 
     if (apiChoice == 0) {
+      print(date); //TODO fix date not displaying for chicago
       artwork = await chicagoService.getRandomArtwork();
     } else {
       artwork = await MetArtService().getRandomArtwork();
