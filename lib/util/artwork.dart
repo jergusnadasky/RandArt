@@ -4,6 +4,8 @@ class Artwork {
   final String imageUrl;
   final String link;
   final String description;
+  final String id;
+
   // final String startDate;
   // final String endDate;
 
@@ -13,6 +15,7 @@ class Artwork {
     required this.artist,
     required this.imageUrl,
     required this.link,
+    required this.id,
     // required this.startDate,
     // required this.endDate,
   });

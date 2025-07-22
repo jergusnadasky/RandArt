@@ -1,6 +1,7 @@
-import 'dart:convert';
 import 'dart:math';
 import 'package:art_gen/pages/about_page.dart';
+import 'package:art_gen/services/chicago_art_service.dart';
+import 'package:art_gen/services/met_art_service.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -9,7 +10,6 @@ import 'dart:ui';
 import 'package:after_layout/after_layout.dart';
 
 import 'package:art_gen/util/artwork.dart';
-
 
 import 'package:url_launcher/url_launcher.dart';
 
@@ -33,6 +33,7 @@ class _ArtHomePageState extends State<ArtHomePage>
   String _description = "";
   String startDate = "";
   String endDate = "";
+  String id = "";
   Color? dominantColor;
   bool imageVisible = false;
   bool _hovering = false;
@@ -136,6 +137,7 @@ class _ArtHomePageState extends State<ArtHomePage>
                                         imageUrl: imageURL,
                                         link: artworkLink,
                                         description: _description,
+                                        id: id
                                       );
                                       _showArtworkOverlay(
                                         context,
@@ -196,7 +198,7 @@ class _ArtHomePageState extends State<ArtHomePage>
                   padding: const EdgeInsets.only(bottom: 30),
                   child: ElevatedButton(
                     onPressed: () {
-                      downloadImageWeb(imageURL);
+                      downloadImageWeb(imageURL, artistName, title);
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: bgColor,
@@ -218,8 +220,6 @@ class _ArtHomePageState extends State<ArtHomePage>
       ),
     );
   }
-
-  
 
   void _setError(String message) {
     setState(() {
@@ -390,93 +390,71 @@ class _ArtHomePageState extends State<ArtHomePage>
   }
 
   Future<void> getRandomArt() async {
-    // Step 1: Start fade out
     setState(() {
       imageVisible = false;
     });
 
-    // Step 2: Begin fetching artwork in the background WHILE the fade-out runs (takes 1s)
-    await Future.delayed(
-      const Duration(milliseconds: 300),
-    ); // fade halfway before heavy work
+    await Future.delayed(const Duration(milliseconds: 300));
 
-    try {
-      final idResponse = await http.get(
-        Uri.parse(
-          'https://api.artic.edu/api/v1/artworks?limit=100&page=${randomNum.nextInt(100) + 1}&fields=id,image_id,title,artist_title,short_description',
-        ),
-      );
+    final int apiChoice = randomNum.nextInt(2); // 0 or 1
+    final ChicagoArtService chicagoService = ChicagoArtService();
+    Artwork? artwork;
 
-      if (idResponse.statusCode != 200) {
-        _setError("Failed to fetch artwork IDs.");
-        return;
-      }
+    if (apiChoice == 0) {
+      artwork = await chicagoService.getRandomArtwork();
+      print("Using Chicago Art API");
+             print(artwork?.id);
 
-      final idData = jsonDecode(idResponse.body);
-      final List<dynamic> artList = idData['data'];
-
-      for (var art in artList) {
-        final imageId = art['image_id'];
-        if (imageId == null || imageId.isEmpty) continue;
-
-        final imageUrl =
-            'https://www.artic.edu/iiif/2/$imageId/full/843,/0/default.jpg';
-
-        final artwork = Artwork(
-          title: art['title'] ?? 'Untitled',
-          artist: art['artist_title'] ?? 'Unknown Artist',
-          imageUrl: imageUrl,
-          link: "https://www.artic.edu/artworks/${art['id']}",
-          description: art['short_description'] ?? '',
-        );
-
-        // Try generating dominant color
-        final palette = await PaletteGenerator.fromImageProvider(
-          NetworkImage(
-            'https://www.artic.edu/iiif/2/$imageId/full/200,/0/default.jpg',
-          ), // Low-res version
-          size: const Size(200, 200),
-        );
-
-        setState(() {
-          _description = artwork.description;
-          artworkLink = artwork.link;
-          title = artwork.title;
-          artistName = artwork.artist;
-          imageURL = artwork.imageUrl;
-          dominantColor = palette.dominantColor?.color ?? Colors.white;
-          imageVisible = true;
-        });
-
-        return;
-      }
-
-      _setError("No artwork with image found.");
-    } catch (error) {
-      _setError("Error: $error");
-    }
-  }
-
-  Future<void> downloadImageWeb(String imageUrl) async {
-    final response = await http.get(Uri.parse(imageUrl));
-
-    if (response.statusCode == 200) {
-      final bytes = response.bodyBytes;
-      final blob = html.Blob([bytes]);
-      final url = html.Url.createObjectUrlFromBlob(blob);
-
-    
-          html.AnchorElement(href: url)
-            ..setAttribute("download", "$artistName-$title.jpg")
-            ..click();
-
-      html.Url.revokeObjectUrl(url); // Clean up after download
     } else {
-      print('Failed to download image.');
+      print("Using Met Art API");
+       artwork = await MetArtService().getRandomArtwork();
+       print(artwork?.id);
     }
+
+    if (artwork == null) {
+      _setError("Failed to fetch artwork.");
+      return;
+    }
+
+    final palette = await PaletteGenerator.fromImageProvider(
+      NetworkImage(artwork.imageUrl),
+      size: const Size(200, 200),
+    );
+
+    setState(() {
+      _description = artwork!.description;
+      artworkLink = artwork.link;
+      title = artwork.title;
+      artistName = artwork.artist;
+      imageURL = artwork.imageUrl;
+      dominantColor = palette.dominantColor?.color ?? Colors.white;
+      imageVisible = true;
+    });
+  }
+}
+
+Future<void> downloadImageWeb(
+  String imageUrl,
+  String artist,
+  String title,
+) async {
+  final response = await http.get(Uri.parse(imageUrl));
+
+  if (response.statusCode == 200) {
+    final bytes = response.bodyBytes;
+    final blob = html.Blob([bytes]);
+    final url = html.Url.createObjectUrlFromBlob(blob);
+
+    html.AnchorElement(href: url)
+      ..setAttribute("download", "$artist-$title.jpg")
+      ..click();
+
+    html.Url.revokeObjectUrl(url); // Clean up after download
+  } else {
+    print('Failed to download image.');
   }
 }
 
 bool isDarkColor(Color color) {
-    return color.computeLuminance() < 0.5;
-  }
+  return color.computeLuminance() < 0.5;
+}
