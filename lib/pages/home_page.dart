@@ -320,8 +320,8 @@ class _ArtHomePageState extends State<ArtHomePage>
                     },
                     icon:
                         isDarkColor(bgColor)
-                            ? Icon(Icons.download_rounded)
-                            : Icon(Icons.download_outlined),
+                            ? Icon(Icons.download_rounded, color: Colors.white,)
+                            : Icon(Icons.download_rounded, color: Colors.black,),
                   ),
                 ),
               ],
