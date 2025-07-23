@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:art_gen/pages/home_page.dart';
 import 'package:flutter/material.dart';
 
 class TitlePage extends StatefulWidget {
@@ -34,7 +35,12 @@ class _TitlePageState extends State<TitlePage> {
       body: Center(
         child: GestureDetector(
           onTap: () {
-            Navigator.pushReplacementNamed(context, '/homepage');
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ArtHomePage('RandArt'),
+              ),
+            );
           },
           child: Image.asset(
             _showBlackLogo ? "logo_black.png" : "logo_white.png",
