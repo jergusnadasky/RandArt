@@ -44,6 +44,8 @@ class _ArtHomePageState extends State<ArtHomePage>
   bool imageVisible = false;
   bool _hovering = false;
   Offset _hoverPosition = Offset.zero;
+  bool _isFirstLoad = true;
+  double _scaffoldOpacity = 0.0;
 
   final randomNum = Random();
 
@@ -58,6 +60,24 @@ class _ArtHomePageState extends State<ArtHomePage>
         isDarkColor(bgColor)
             ? Colors.black.withOpacity(0.5)
             : Colors.white.withOpacity(0.5);
+    return _isFirstLoad
+        ? AnimatedOpacity(
+          opacity: _scaffoldOpacity,
+          duration: const Duration(seconds: 2),
+          curve: Curves.easeInOut,
+          child: _buildScaffold(),
+        )
+        : _buildScaffold();
+  }
+
+  Widget _buildScaffold() {
+    final bgColor = dominantColor ?? Colors.white;
+    final textColor = isDarkColor(bgColor) ? Colors.white : Colors.black;
+    final overlay =
+        isDarkColor(bgColor)
+            ? Colors.black.withOpacity(0.5)
+            : Colors.white.withOpacity(0.5);
+
     return Scaffold(
       backgroundColor: Colors.transparent,
       appBar: PreferredSize(
@@ -240,8 +260,7 @@ class _ArtHomePageState extends State<ArtHomePage>
                                                         'Copied $hexCode to clipboard',
                                                       ),
                                                       backgroundColor:
-                                                          colorData
-                                                              .color, // <— sets background to the copied color
+                                                          colorData.color,
                                                       behavior:
                                                           SnackBarBehavior
                                                               .floating,
@@ -530,7 +549,16 @@ class _ArtHomePageState extends State<ArtHomePage>
 
   @override
   void afterFirstLayout(BuildContext context) {
-    getRandomArt();
+    setState(() {
+      _scaffoldOpacity = 1.0;
+    });
+
+    Future.delayed(const Duration(seconds: 2), () {
+      setState(() {
+        _isFirstLoad = false;
+      });
+      getRandomArt();
+    });
   }
 
   Future<void> getRandomArt() async {

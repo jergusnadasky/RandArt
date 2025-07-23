@@ -1,4 +1,5 @@
 
+import 'package:art_gen/pages/title_page.dart';
 import 'package:flutter/material.dart';
 import 'package:art_gen/pages/home_page.dart';
 
@@ -12,12 +13,14 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      title: "RandArt",
+      
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const ArtHomePage("RandArt"),
+      home: TitlePage(),//const ArtHomePage("RandArt"),
       routes: {
       '/homepage' :(context) => ArtHomePage("RandArt"),
 
