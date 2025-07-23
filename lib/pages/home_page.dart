@@ -25,7 +25,6 @@ class ArtHomePage extends StatefulWidget {
   @override
   State<ArtHomePage> createState() => _ArtHomePageState();
 }
-//TODO Create Loading screen with a logo fade out
 //TODO change universal font to something nicer
 //TODO add bottom bar with number of artworks viewed out of however many were queried in both APIs. Do the math and increment on every click of the button.
 
@@ -108,12 +107,14 @@ class _ArtHomePageState extends State<ArtHomePage>
                 onPressed:
                     () => Navigator.push(
                       context,
-                      MaterialPageRoute(
-                        builder:
-                            (context) => AboutPage(
+                      PageRouteBuilder(
+                        pageBuilder:
+                            (context, animation1, animation2) => AboutPage(
                               bgColor: dominantColor ?? Colors.white,
                               title: widget.title,
                             ),
+                        transitionDuration: Duration.zero,
+                        reverseTransitionDuration: Duration.zero,
                       ),
                     ),
               ),
@@ -327,7 +328,8 @@ class _ArtHomePageState extends State<ArtHomePage>
             ),
             if (_hoveredColorIndex != null)
               Positioned(
-                left: _hoverPosition.dx + 10,
+                left:
+                    _hoverPosition.dx + 10, // Changes popup horizontal position
                 top: _hoverPosition.dy + 10,
                 child: Material(
                   color: Colors.transparent,

@@ -22,8 +22,7 @@ class AboutPage extends StatelessWidget {
           onTap: () => Navigator.pop(context),
           child: Center(
             child: SizedBox(
-              height:
-                  250, // Adjust this value as needed (default AppBar height is 56)
+              height: 250,
               child:
                   isDarkColor(bgColor)
                       ? Image.asset("logo_white.png", fit: BoxFit.contain)
@@ -31,13 +30,6 @@ class AboutPage extends StatelessWidget {
             ),
           ),
         ),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.pages, color: textColor),
-            onPressed:
-                () => Navigator.pop(context), // you're already on about page
-          ),
-        ],
       ),
       body: Center(
         child: Text(
@@ -49,5 +41,3 @@ class AboutPage extends StatelessWidget {
     );
   }
 }
-
-
