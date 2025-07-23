@@ -25,6 +25,7 @@ class ArtHomePage extends StatefulWidget {
   State<ArtHomePage> createState() => _ArtHomePageState();
 }
 //TODO add bottom bar with number of artworks viewed out of however many were queried in both APIs. Do the math and increment on every click of the button.
+//TODO add giant overlay when hovering over color and make the popup have black skinny border. Left side should have a 20x20 square of the color and then the right side will have the name along with the hexcodes and the rgb codes and stuff like that.
 class _ArtHomePageState extends State<ArtHomePage>
     with AfterLayoutMixin<ArtHomePage> {
   String imageURL = "";
@@ -39,10 +40,13 @@ class _ArtHomePageState extends State<ArtHomePage>
   Color? dominantColor;
   bool imageVisible = false;
   bool _hovering = false;
+  Offset _hoverPosition = Offset.zero;
+
 
   final randomNum = Random();
 
   List<ColorInfo> _extractedColors = [];
+  int? _hoveredColorIndex;
 
   @override
   Widget build(BuildContext context) {
@@ -131,11 +135,9 @@ class _ArtHomePageState extends State<ArtHomePage>
                                     ),
                                     child: MouseRegion(
                                       onEnter:
-                                          (_) =>
-                                              setState(() => _hovering = true),
+                                          (_) => setState(() => _hovering = true),
                                       onExit:
-                                          (_) =>
-                                              setState(() => _hovering = false),
+                                          (_) => setState(() => _hovering = false),
                                       child: GestureDetector(
                                         onTap: () {
                                           final currentArtwork = Artwork(
@@ -164,16 +166,13 @@ class _ArtHomePageState extends State<ArtHomePage>
                                               maxHeight: 350,
                                             ),
                                             child: ClipRRect(
-                                              borderRadius:
-                                                  BorderRadius.circular(
-                                                    16,
-                                                  ), // keep it consistent
+                                              borderRadius: BorderRadius.circular(16),
                                               child: CachedNetworkImage(
                                                 imageUrl: imageURL,
                                                 fit: BoxFit.contain,
                                                 fadeInDuration: const Duration(
                                                   milliseconds: 800,
-                                                ), // optional
+                                                ),
                                                 fadeOutDuration: const Duration(
                                                   milliseconds: 300,
                                                 ),
@@ -184,8 +183,7 @@ class _ArtHomePageState extends State<ArtHomePage>
                                       ),
                                     ),
                                   ),
-
-                                  const SizedBox(height: 24),
+                                  const SizedBox(height: 48),
 
                                   // Spectrum gradient below the image
                                   if (_extractedColors.isNotEmpty)
@@ -193,18 +191,26 @@ class _ArtHomePageState extends State<ArtHomePage>
                                       height: 20,
                                       width: 200, // adjust width as needed
                                       child: Row(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.stretch,
-                                        children:
-                                            _extractedColors.map((colorData) {
-                                              return Container(
-                                                width:
-                                                    200 * colorData.percentage,
-                                                color: colorData.color,
-                                              );
-                                            }).toList(),
+                                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                                        children: List.generate(_extractedColors.length, (index) {
+                                          final colorData = _extractedColors[index];
+                                          return MouseRegion(
+                                            onEnter: (event) => setState(() {
+                                              _hoverPosition = event.position;
+                                              _hoveredColorIndex = index;
+                                            }),
+                                            onExit: (_) => setState(() => _hoveredColorIndex = null),
+                                            onHover: (event) => setState(() => _hoverPosition = event.position),
+                                            child: Container(
+                                              width: 200 * colorData.percentage,
+                                              height: 60,
+                                              color: colorData.color,
+                                            ),
+                                          );
+                                        }),
                                       ),
                                     ),
+                                  
                                 ],
                               ),
                             ),
@@ -246,6 +252,44 @@ class _ArtHomePageState extends State<ArtHomePage>
                 ),
               ],
             ),
+            if (_hoveredColorIndex != null)
+                                    Positioned(
+                                      left: _hoverPosition.dx + 10,
+                                      top: _hoverPosition.dy + 10,
+                                      child: Material(
+                                        color: Colors.transparent,
+                                        child: Container(
+                                          padding: const EdgeInsets.all(12),
+                                          decoration: BoxDecoration(
+                                            color: Colors.white,
+                                            border: Border.all(color: Colors.black, width: 1),
+                                            boxShadow: [BoxShadow(blurRadius: 8, color: Colors.black26)],
+                                          ),
+                                          child: Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              Container(
+                                                width: 20,
+                                                height: 20,
+                                                decoration: BoxDecoration(
+                                                  color: _extractedColors[_hoveredColorIndex!].color,
+                                                  border: Border.all(color: Colors.black),
+                                                ),
+                                              ),
+                                              const SizedBox(width: 12),
+                                              Column(
+                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                children: [
+                                                  Text("HEX: #${_extractedColors[_hoveredColorIndex!].color.value.toRadixString(16).substring(2).toUpperCase()}"),
+                                                  Text("RGB: (${_extractedColors[_hoveredColorIndex!].color.red}, ${_extractedColors[_hoveredColorIndex!].color.green}, ${_extractedColors[_hoveredColorIndex!].color.blue})"),
+                                                  Text("HSL: ${HSLColor.fromColor(_extractedColors[_hoveredColorIndex!].color).toString()}")
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                     ),
+                                    ),
           ],
         ),
       ),
