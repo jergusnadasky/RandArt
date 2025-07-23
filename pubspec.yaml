@@ -38,7 +38,7 @@ dependencies:
   image: ^4.5.4
   palette_generator: ^0.3.3
   animated_text_kit: ^4.2.3
-  url_launcher: ^6.3.1
+  url_launcher: ^6.3.2
   cached_network_image: ^3.3.1
   after_layout: ^1.2.0
 
