@@ -2,6 +2,7 @@ import 'dart:math';
 import 'package:art_gen/pages/about_page.dart';
 import 'package:art_gen/services/chicago_art_service.dart';
 import 'package:art_gen/services/met_art_service.dart';
+import 'package:art_gen/services/spectrum_creator.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -23,7 +24,7 @@ class ArtHomePage extends StatefulWidget {
   @override
   State<ArtHomePage> createState() => _ArtHomePageState();
 }
-
+//TODO add bottom bar with number of artworks viewed out of however many were queried in both APIs. Do the math and increment on every click of the button.
 class _ArtHomePageState extends State<ArtHomePage>
     with AfterLayoutMixin<ArtHomePage> {
   String imageURL = "";
@@ -41,6 +42,8 @@ class _ArtHomePageState extends State<ArtHomePage>
 
   final randomNum = Random();
 
+  List<ColorInfo> _extractedColors = [];
+
   @override
   Widget build(BuildContext context) {
     final bgColor = dominantColor ?? Colors.white;
@@ -50,7 +53,7 @@ class _ArtHomePageState extends State<ArtHomePage>
             ? Colors.black.withOpacity(0.5)
             : Colors.white.withOpacity(0.5);
     return Scaffold(
-      backgroundColor: Colors.transparent, // Now handled by AnimatedContainer
+      backgroundColor: Colors.transparent,
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(kToolbarHeight),
         child: AnimatedContainer(
@@ -65,8 +68,7 @@ class _ArtHomePageState extends State<ArtHomePage>
             title: GestureDetector(
               child: Center(
                 child: SizedBox(
-                  height:
-                      250, // Adjust this value as needed (default AppBar height is 56)
+                  height: 250,
                   child:
                       isDarkColor(bgColor)
                           ? Image.asset("logo_white.png", fit: BoxFit.contain)
@@ -111,7 +113,7 @@ class _ArtHomePageState extends State<ArtHomePage>
                   child: Center(
                     child: SizedBox(
                       width: double.infinity,
-                      height: 600, // Fixed height "canvas"
+                      height: 600,
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         mainAxisSize: MainAxisSize.min,
@@ -120,56 +122,93 @@ class _ArtHomePageState extends State<ArtHomePage>
                             AnimatedOpacity(
                               opacity: imageVisible ? 1.0 : 0.0,
                               duration: const Duration(seconds: 1),
-                              child: ConstrainedBox(
-                                constraints: const BoxConstraints(
-                                  maxHeight:
-                                      350, // Adjusted height to avoid overflow
-                                ),
-                                child: MouseRegion(
-                                  onEnter:
-                                      (_) => setState(() => _hovering = true),
-                                  onExit:
-                                      (_) => setState(() => _hovering = false),
-                                  child: GestureDetector(
-                                    onTap: () {
-                                      final currentArtwork = Artwork(
-                                        title: title,
-                                        artist: artistName,
-                                        imageUrl: imageURL,
-                                        link: artworkLink,
-                                        description: _description,
-                                        id: id,
-                                        date: _date,
-                                      );
-                                      _showArtworkOverlay(
-                                        context,
-                                        currentArtwork,
-                                        dominantColor,
-                                      );
-                                    },
-                                    child: AnimatedScale(
-                                      scale:
-                                          _hovering
-                                              ? 1.1
-                                              : 1.0, // 10% zoom on hover
-                                      duration: const Duration(
-                                        milliseconds: 500,
-                                      ),
-                                      curve: Curves.easeInOut,
-                                      child: ConstrainedBox(
-                                        constraints: const BoxConstraints(
-                                          maxHeight: 350,
-                                        ),
-                                        child: CachedNetworkImage(
-                                          imageUrl: imageURL,
-                                          fit: BoxFit.contain,
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  ConstrainedBox(
+                                    constraints: const BoxConstraints(
+                                      maxHeight: 350,
+                                    ),
+                                    child: MouseRegion(
+                                      onEnter:
+                                          (_) =>
+                                              setState(() => _hovering = true),
+                                      onExit:
+                                          (_) =>
+                                              setState(() => _hovering = false),
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          final currentArtwork = Artwork(
+                                            title: title,
+                                            artist: artistName,
+                                            imageUrl: imageURL,
+                                            link: artworkLink,
+                                            description: _description,
+                                            id: id,
+                                            date: _date,
+                                          );
+                                          _showArtworkOverlay(
+                                            context,
+                                            currentArtwork,
+                                            dominantColor,
+                                          );
+                                        },
+                                        child: AnimatedScale(
+                                          scale: _hovering ? 1.1 : 1.0,
+                                          duration: const Duration(
+                                            milliseconds: 500,
+                                          ),
+                                          curve: Curves.easeInOut,
+                                          child: ConstrainedBox(
+                                            constraints: const BoxConstraints(
+                                              maxHeight: 350,
+                                            ),
+                                            child: ClipRRect(
+                                              borderRadius:
+                                                  BorderRadius.circular(
+                                                    16,
+                                                  ), // keep it consistent
+                                              child: CachedNetworkImage(
+                                                imageUrl: imageURL,
+                                                fit: BoxFit.contain,
+                                                fadeInDuration: const Duration(
+                                                  milliseconds: 800,
+                                                ), // optional
+                                                fadeOutDuration: const Duration(
+                                                  milliseconds: 300,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
                                         ),
                                       ),
                                     ),
                                   ),
-                                ),
+
+                                  const SizedBox(height: 24),
+
+                                  // Spectrum gradient below the image
+                                  if (_extractedColors.isNotEmpty)
+                                    Container(
+                                      height: 20,
+                                      width: 200, // adjust width as needed
+                                      child: Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.stretch,
+                                        children:
+                                            _extractedColors.map((colorData) {
+                                              return Container(
+                                                width:
+                                                    200 * colorData.percentage,
+                                                color: colorData.color,
+                                              );
+                                            }).toList(),
+                                      ),
+                                    ),
+                                ],
                               ),
                             ),
+
                           const SizedBox(height: 16),
                         ],
                       ),
@@ -179,14 +218,11 @@ class _ArtHomePageState extends State<ArtHomePage>
 
                 Padding(
                   padding: const EdgeInsets.only(bottom: 30),
-                  child: ElevatedButton(
+                  child: ElevatedButton( //TODO change button style
                     onPressed: () {
                       getRandomArt();
                     },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: bgColor,
-                      //isDarkColor(bgColor) ? Colors.white : Colors.black,
-                    ),
+                    style: ElevatedButton.styleFrom(backgroundColor: bgColor),
                     child: Text(
                       "Explore Art",
                       style: TextStyle(
@@ -202,7 +238,10 @@ class _ArtHomePageState extends State<ArtHomePage>
                     onPressed: () {
                       downloadImageWeb(imageURL, artistName, title);
                     },
-                    icon: isDarkColor(bgColor) ? Icon(Icons.download_rounded) : Icon(Icons.download_outlined),
+                    icon:
+                        isDarkColor(bgColor)
+                            ? Icon(Icons.download_rounded)
+                            : Icon(Icons.download_outlined),
                   ),
                 ),
               ],
@@ -219,7 +258,7 @@ class _ArtHomePageState extends State<ArtHomePage>
       title = message;
       artistName = "";
       dominantColor = Colors.white;
-      imageVisible = true; // Show error message with fade-in
+      imageVisible = true;
     });
   }
 
@@ -238,18 +277,15 @@ class _ArtHomePageState extends State<ArtHomePage>
         return Scaffold(
           backgroundColor: Colors.transparent,
           body: GestureDetector(
-            behavior:
-                HitTestBehavior
-                    .opaque, // Important to detect taps outside dialog
+            behavior: HitTestBehavior.opaque,
             onTap: () {
-              Navigator.of(context).pop(); // Close dialog on tap outside
+              Navigator.of(context).pop();
             },
             child: Center(
               child: StatefulBuilder(
                 builder: (BuildContext context, StateSetter setModalState) {
                   return Stack(
                     children: [
-                      // Wrap dialog in IgnorePointer to avoid closing when tapping inside dialog
                       IgnorePointer(
                         ignoring: false,
                         child: ClipRRect(
@@ -270,15 +306,13 @@ class _ArtHomePageState extends State<ArtHomePage>
                                 ),
                               ),
                               child: GestureDetector(
-                                onTap:
-                                    () {}, // Prevent tap event from bubbling up to the outer GestureDetector
+                                onTap: () {},
                                 child: Row(
                                   children: [
-                                    // LEFT: Large artwork image
                                     Expanded(
                                       flex: 2,
                                       child: ClipRRect(
-                                        borderRadius: BorderRadius.circular(24),
+                                        borderRadius: BorderRadius.circular(16),
                                         child: CachedNetworkImage(
                                           imageUrl: imageURL,
                                           fit: BoxFit.contain,
@@ -286,8 +320,6 @@ class _ArtHomePageState extends State<ArtHomePage>
                                       ),
                                     ),
                                     const SizedBox(width: 24),
-                                    //TODO make this section scrollable
-                                    // RIGHT: Artwork info
                                     Expanded(
                                       flex: 3,
                                       child: Align(
@@ -309,7 +341,6 @@ class _ArtHomePageState extends State<ArtHomePage>
                                                             .externalApplication,
                                                   );
                                                 } else {
-                                                  // Handle error, e.g., show a message
                                                   print(
                                                     'Could not launch $url',
                                                   );
@@ -345,9 +376,7 @@ class _ArtHomePageState extends State<ArtHomePage>
                                                   color: Colors.white60,
                                                 ),
                                               ),
-
                                             const Spacer(),
-
                                             if (_date != '')
                                               Align(
                                                 alignment:
@@ -371,7 +400,6 @@ class _ArtHomePageState extends State<ArtHomePage>
                           ),
                         ),
                       ),
-                      // Close 'X' button
                       Positioned(
                         top: 16,
                         right: 16,
@@ -393,7 +421,6 @@ class _ArtHomePageState extends State<ArtHomePage>
 
   @override
   void afterFirstLayout(BuildContext context) {
-    // Calling the same function "after layout" to resolve the issue.
     getRandomArt();
   }
 
@@ -404,8 +431,7 @@ class _ArtHomePageState extends State<ArtHomePage>
 
     await Future.delayed(const Duration(milliseconds: 300));
 
-
-    final int apiChoice = randomNum.nextInt(2); // 0 or 1
+    final int apiChoice = randomNum.nextInt(2);
     final ChicagoArtService chicagoService = ChicagoArtService();
     Artwork? artwork;
 
@@ -423,6 +449,10 @@ class _ArtHomePageState extends State<ArtHomePage>
     final palette = await PaletteGenerator.fromImageProvider(
       NetworkImage(artwork.imageUrl),
       size: const Size(200, 200),
+    );
+
+    _extractedColors = await extractColorsFromImage(
+      NetworkImage(artwork.imageUrl),
     );
 
     setState(() {
@@ -454,7 +484,7 @@ Future<void> downloadImageWeb(
       ..setAttribute("download", "$artist-$title.jpg")
       ..click();
 
-    html.Url.revokeObjectUrl(url); // Clean up after download
+    html.Url.revokeObjectUrl(url);
   } else {
     print('Failed to download image.');
   }
