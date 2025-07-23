@@ -202,7 +202,7 @@ class _ArtHomePageState extends State<ArtHomePage>
                     onPressed: () {
                       downloadImageWeb(imageURL, artistName, title);
                     },
-                    icon: Icon(Icons.download_rounded),
+                    icon: isDarkColor(bgColor) ? Icon(Icons.download_rounded) : Icon(Icons.download_outlined),
                   ),
                 ),
               ],
