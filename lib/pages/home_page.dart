@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'package:flutter/services.dart';
 import 'package:art_gen/pages/about_page.dart';
 import 'package:art_gen/services/chicago_art_service.dart';
 import 'package:art_gen/services/met_art_service.dart';
@@ -24,8 +25,10 @@ class ArtHomePage extends StatefulWidget {
   @override
   State<ArtHomePage> createState() => _ArtHomePageState();
 }
+//TODO Create Loading screen with a logo fade out
+//TODO change universal font to something nicer
 //TODO add bottom bar with number of artworks viewed out of however many were queried in both APIs. Do the math and increment on every click of the button.
-//TODO add giant overlay when hovering over color and make the popup have black skinny border. Left side should have a 20x20 square of the color and then the right side will have the name along with the hexcodes and the rgb codes and stuff like that.
+
 class _ArtHomePageState extends State<ArtHomePage>
     with AfterLayoutMixin<ArtHomePage> {
   String imageURL = "";
@@ -41,7 +44,6 @@ class _ArtHomePageState extends State<ArtHomePage>
   bool imageVisible = false;
   bool _hovering = false;
   Offset _hoverPosition = Offset.zero;
-
 
   final randomNum = Random();
 
@@ -135,9 +137,11 @@ class _ArtHomePageState extends State<ArtHomePage>
                                     ),
                                     child: MouseRegion(
                                       onEnter:
-                                          (_) => setState(() => _hovering = true),
+                                          (_) =>
+                                              setState(() => _hovering = true),
                                       onExit:
-                                          (_) => setState(() => _hovering = false),
+                                          (_) =>
+                                              setState(() => _hovering = false),
                                       child: GestureDetector(
                                         onTap: () {
                                           final currentArtwork = Artwork(
@@ -166,7 +170,8 @@ class _ArtHomePageState extends State<ArtHomePage>
                                               maxHeight: 350,
                                             ),
                                             child: ClipRRect(
-                                              borderRadius: BorderRadius.circular(16),
+                                              borderRadius:
+                                                  BorderRadius.circular(16),
                                               child: CachedNetworkImage(
                                                 imageUrl: imageURL,
                                                 fit: BoxFit.contain,
@@ -191,26 +196,74 @@ class _ArtHomePageState extends State<ArtHomePage>
                                       height: 20,
                                       width: 200, // adjust width as needed
                                       child: Row(
-                                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                                        children: List.generate(_extractedColors.length, (index) {
-                                          final colorData = _extractedColors[index];
-                                          return MouseRegion(
-                                            onEnter: (event) => setState(() {
-                                              _hoverPosition = event.position;
-                                              _hoveredColorIndex = index;
-                                            }),
-                                            onExit: (_) => setState(() => _hoveredColorIndex = null),
-                                            onHover: (event) => setState(() => _hoverPosition = event.position),
-                                            child: Container(
-                                              width: 200 * colorData.percentage,
-                                              height: 60,
-                                              color: colorData.color,
-                                            ),
-                                          );
-                                        }),
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.stretch,
+                                        children: List.generate(
+                                          _extractedColors.length,
+                                          (index) {
+                                            final colorData =
+                                                _extractedColors[index];
+                                            final hexCode =
+                                                '#${colorData.color.value.toRadixString(16).padLeft(8, '0').substring(2).toUpperCase()}';
+
+                                            return MouseRegion(
+                                              onEnter:
+                                                  (event) => setState(() {
+                                                    _hoverPosition =
+                                                        event.position;
+                                                    _hoveredColorIndex = index;
+                                                  }),
+                                              onExit:
+                                                  (_) => setState(
+                                                    () =>
+                                                        _hoveredColorIndex =
+                                                            null,
+                                                  ),
+                                              onHover:
+                                                  (event) => setState(
+                                                    () =>
+                                                        _hoverPosition =
+                                                            event.position,
+                                                  ),
+                                              child: GestureDetector(
+                                                onTap: () {
+                                                  Clipboard.setData(
+                                                    ClipboardData(
+                                                      text: hexCode,
+                                                    ),
+                                                  );
+                                                  ScaffoldMessenger.of(
+                                                    context,
+                                                  ).showSnackBar(
+                                                    SnackBar(
+                                                      content: Text(
+                                                        'Copied $hexCode to clipboard',
+                                                      ),
+                                                      backgroundColor:
+                                                          colorData
+                                                              .color, // <— sets background to the copied color
+                                                      behavior:
+                                                          SnackBarBehavior
+                                                              .floating,
+                                                      duration: const Duration(
+                                                        seconds: 2,
+                                                      ),
+                                                    ),
+                                                  );
+                                                },
+                                                child: Container(
+                                                  width:
+                                                      200 *
+                                                      colorData.percentage,
+                                                  height: 60,
+                                                  color: colorData.color,
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                        ),
                                       ),
                                     ),
-                                  
                                 ],
                               ),
                             ),
@@ -224,7 +277,8 @@ class _ArtHomePageState extends State<ArtHomePage>
 
                 Padding(
                   padding: const EdgeInsets.only(bottom: 30),
-                  child: ElevatedButton( //TODO change button style
+                  child: ElevatedButton(
+                    //TODO change button style
                     onPressed: () {
                       getRandomArt();
                     },
@@ -253,43 +307,54 @@ class _ArtHomePageState extends State<ArtHomePage>
               ],
             ),
             if (_hoveredColorIndex != null)
-                                    Positioned(
-                                      left: _hoverPosition.dx + 10,
-                                      top: _hoverPosition.dy + 10,
-                                      child: Material(
-                                        color: Colors.transparent,
-                                        child: Container(
-                                          padding: const EdgeInsets.all(12),
-                                          decoration: BoxDecoration(
-                                            color: Colors.white,
-                                            border: Border.all(color: Colors.black, width: 1),
-                                            boxShadow: [BoxShadow(blurRadius: 8, color: Colors.black26)],
-                                          ),
-                                          child: Row(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              Container(
-                                                width: 20,
-                                                height: 20,
-                                                decoration: BoxDecoration(
-                                                  color: _extractedColors[_hoveredColorIndex!].color,
-                                                  border: Border.all(color: Colors.black),
-                                                ),
-                                              ),
-                                              const SizedBox(width: 12),
-                                              Column(
-                                                crossAxisAlignment: CrossAxisAlignment.start,
-                                                children: [
-                                                  Text("HEX: #${_extractedColors[_hoveredColorIndex!].color.value.toRadixString(16).substring(2).toUpperCase()}"),
-                                                  Text("RGB: (${_extractedColors[_hoveredColorIndex!].color.red}, ${_extractedColors[_hoveredColorIndex!].color.green}, ${_extractedColors[_hoveredColorIndex!].color.blue})"),
-                                                  Text("HSL: ${HSLColor.fromColor(_extractedColors[_hoveredColorIndex!].color).toString()}")
-                                                ],
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                     ),
-                                    ),
+              Positioned(
+                left: _hoverPosition.dx + 10,
+                top: _hoverPosition.dy + 10,
+                child: Material(
+                  color: Colors.transparent,
+                  child: Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      border: Border.all(color: Colors.black, width: 1),
+                      boxShadow: [
+                        BoxShadow(blurRadius: 8, color: Colors.black26),
+                      ],
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          width: 60,
+                          height: 60,
+                          decoration: BoxDecoration(
+                            color: _extractedColors[_hoveredColorIndex!].color,
+                            border: Border.all(color: Colors.black),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              textAlign: TextAlign.end,
+                              "HEX: #${_extractedColors[_hoveredColorIndex!].color.value.toRadixString(16).substring(2).toUpperCase()}",
+                            ),
+                            Text(
+                              textAlign: TextAlign.end,
+                              "RGB: (${_extractedColors[_hoveredColorIndex!].color.red}, ${_extractedColors[_hoveredColorIndex!].color.green}, ${_extractedColors[_hoveredColorIndex!].color.blue})",
+                            ),
+                            Text(
+                              textAlign: TextAlign.end,
+                              "HSL: ${HSLColor.fromColor(_extractedColors[_hoveredColorIndex!].color).toString()}",
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
           ],
         ),
       ),
