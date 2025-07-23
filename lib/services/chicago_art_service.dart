@@ -47,4 +47,4 @@ class ChicagoArtService {
     }
   }
 }
-// this is a test push message
+// I have removed the test message
