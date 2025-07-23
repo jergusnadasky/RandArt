@@ -53,12 +53,6 @@ class _ArtHomePageState extends State<ArtHomePage>
 
   @override
   Widget build(BuildContext context) {
-    final bgColor = dominantColor ?? Colors.white;
-    final textColor = isDarkColor(bgColor) ? Colors.white : Colors.black;
-    final overlay =
-        isDarkColor(bgColor)
-            ? Colors.black.withOpacity(0.5)
-            : Colors.white.withOpacity(0.5);
     return _isFirstLoad
         ? AnimatedOpacity(
           opacity: _scaffoldOpacity,
