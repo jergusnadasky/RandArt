@@ -35,7 +35,7 @@ class ChicagoArtService {
           link: "https://www.artic.edu/artworks/${art['id']}",
           description: art['short_description'] ?? '',
           id: art['id'].toString(),
-          date: art['date_display'] ?? '99999', // Optional date field
+          date: art['date_display'] ?? '99999', // Optional date field TODO
         );
 
         return artwork;
@@ -47,4 +47,3 @@ class ChicagoArtService {
     }
   }
 }
-//test code
