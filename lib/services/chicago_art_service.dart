@@ -43,8 +43,6 @@ class ChicagoArtService {
 
       return null; // If no image found
     } catch (error) {
-            print('test');
-
       return null;
     }
   }
