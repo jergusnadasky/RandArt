@@ -10,7 +10,7 @@ class ChicagoArtService {
     try {
       final idResponse = await http.get(
         Uri.parse(
-          'https://api.artic.edu/api/v1/artworks?limit=100&page=${_random.nextInt(100) + 1}&fields=id,image_id,title,artist_title,short_description',
+          'https://api.artic.edu/api/v1/artworks?limit=100&page=${_random.nextInt(100) + 1}&fields=id,image_id,title,artist_title,short_description,date_display,thumbnail',
         ),
       );
 
@@ -20,6 +20,8 @@ class ChicagoArtService {
 
       final idData = jsonDecode(idResponse.body);
       final List<dynamic> artList = idData['data'];
+
+
 
       for (var art in artList) {
         final imageId = art['image_id'];
@@ -33,11 +35,10 @@ class ChicagoArtService {
           artist: art['artist_title'] ?? 'Unknown Artist',
           imageUrl: imageUrl,
           link: "https://www.artic.edu/artworks/${art['id']}",
-          description: art['short_description'] ?? '',
+          description: art['short_description'] ?? art['thumbnail']['alt_text'],
           id: art['id'].toString(),
-          date: art['date_display'] ?? '99999', // Optional date field TODO
+          date: art['date_display'].toString(), 
         );
-
         return artwork;
       }
 
@@ -47,4 +48,3 @@ class ChicagoArtService {
     }
   }
 }
-// I have removed the test message

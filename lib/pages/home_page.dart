@@ -34,7 +34,7 @@ class _ArtHomePageState extends State<ArtHomePage>
   String startDate = "";
   String endDate = "";
   String id = "";
-  String date = "";
+  String _date = "";
   Color? dominantColor;
   bool imageVisible = false;
   bool _hovering = false;
@@ -139,7 +139,7 @@ class _ArtHomePageState extends State<ArtHomePage>
                                         link: artworkLink,
                                         description: _description,
                                         id: id,
-                                        date: date,
+                                        date: _date,
                                       );
                                       _showArtworkOverlay(
                                         context,
@@ -286,6 +286,7 @@ class _ArtHomePageState extends State<ArtHomePage>
                                       ),
                                     ),
                                     const SizedBox(width: 24),
+                                    //TODO make this section scrollable
                                     // RIGHT: Artwork info
                                     Expanded(
                                       flex: 3,
@@ -338,7 +339,7 @@ class _ArtHomePageState extends State<ArtHomePage>
                                             const SizedBox(height: 20),
                                             if (_description != '')
                                               Text(
-                                                'description: ${artwork.description}',
+                                                artwork.description,
                                                 style: const TextStyle(
                                                   fontSize: 16,
                                                   color: Colors.white60,
@@ -347,12 +348,12 @@ class _ArtHomePageState extends State<ArtHomePage>
 
                                             const Spacer(),
 
-                                            if (date != '')
+                                            if (_date != '')
                                               Align(
                                                 alignment:
                                                     Alignment.bottomRight,
                                                 child: Text(
-                                                  artwork.date,
+                                                  _date,
                                                   style: const TextStyle(
                                                     color: Colors.white70,
                                                     fontSize: 14,
@@ -404,13 +405,11 @@ class _ArtHomePageState extends State<ArtHomePage>
     await Future.delayed(const Duration(milliseconds: 300));
 
 
-    //TODO revert when done testing
-    final int apiChoice = 0;//randomNum.nextInt(2); // 0 or 1
+    final int apiChoice = randomNum.nextInt(2); // 0 or 1
     final ChicagoArtService chicagoService = ChicagoArtService();
     Artwork? artwork;
 
     if (apiChoice == 0) {
-      print(date); //TODO fix date not displaying for chicago
       artwork = await chicagoService.getRandomArtwork();
     } else {
       artwork = await MetArtService().getRandomArtwork();
@@ -434,7 +433,7 @@ class _ArtHomePageState extends State<ArtHomePage>
       imageURL = artwork.imageUrl;
       dominantColor = palette.dominantColor?.color ?? Colors.white;
       imageVisible = true;
-      date = artwork.date;
+      _date = artwork.date;
     });
   }
 }
