@@ -476,6 +476,7 @@ class _ArtHomePageState extends State<ArtHomePage>
                                                   );
                                                 }
                                               },
+                                              //TODO make right side scrollable
                                               child: Text(
                                                 artwork.title,
                                                 style: const TextStyle(

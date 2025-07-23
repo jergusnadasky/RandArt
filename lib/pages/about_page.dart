@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:art_gen/pages/home_page.dart';
-
+//TODO add about page stuff
 class AboutPage extends StatelessWidget {
   final Color bgColor;
   final String title;
