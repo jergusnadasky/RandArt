@@ -247,7 +247,7 @@ class _ArtHomePageState extends State<ArtHomePage>
                                                       text: hexCode,
                                                     ),
                                                   );
-                                                  ScaffoldMessenger.of(
+                                                  ScaffoldMessenger.of( //TODO fix text color for light backrounds (dark too)
                                                     context,
                                                   ).showSnackBar(
                                                     SnackBar(
