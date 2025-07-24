@@ -570,7 +570,7 @@ class _ArtHomePageState extends State<ArtHomePage>
     Artwork? artwork;
 
     if (apiChoice == 0) {
-      artwork = await chicagoService.getRandomArtwork();
+      artwork = await chicagoService.getRandomArtwork(); //TODO check copyright
     } else {
       artwork = await MetArtService().getRandomArtwork();
     }
