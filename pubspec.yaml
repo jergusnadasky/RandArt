@@ -75,6 +75,7 @@ flutter:
   assets:
   - assets/logo_white.png
   - assets/logo_black.png
+  - assets/d7apevh-970a3f31-8739-425a-ace8-785934f39ce7.png
 
 
 
@@ -89,8 +90,10 @@ flutter:
   # "family" key with the font family name, and a "fonts" key with a
   # list giving the asset and other descriptors for the font. For
   # example:
-  # fonts:
-  #   - family: Schyler
+  fonts:
+   - family: Barcode
+     fonts:
+     - asset: fonts/c39hrp48dhtt.ttf
   #     fonts:
   #       - asset: fonts/Schyler-Regular.ttf
   #       - asset: fonts/Schyler-Italic.ttf
@@ -103,3 +106,5 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+
+  

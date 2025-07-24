@@ -247,11 +247,21 @@ class _ArtHomePageState extends State<ArtHomePage>
                                                       text: hexCode,
                                                     ),
                                                   );
-                                                  ScaffoldMessenger.of( //TODO fix text color for light backrounds (dark too)
+                                                  ScaffoldMessenger.of(
                                                     context,
                                                   ).showSnackBar(
                                                     SnackBar(
                                                       content: Text(
+                                                        style: TextStyle(
+                                                          color:
+                                                              isDarkColor(
+                                                                    colorData
+                                                                        .color,
+                                                                  )
+                                                                  ? Colors.white
+                                                                  : Colors
+                                                                      .black,
+                                                        ),
                                                         'Copied $hexCode to clipboard',
                                                       ),
                                                       backgroundColor:
@@ -291,20 +301,50 @@ class _ArtHomePageState extends State<ArtHomePage>
 
                 Padding(
                   padding: const EdgeInsets.only(bottom: 30),
-                  child: ElevatedButton(
-                    //TODO change button style
-                    onPressed: () {
-                      getRandomArt();
-                    },
-                    style: ElevatedButton.styleFrom(backgroundColor: bgColor),
-                    child: Text(
-                      "Explore Art",
-                      style: TextStyle(
-                        color:
-                            isDarkColor(bgColor) ? Colors.white : Colors.black,
+
+                  child: GestureDetector(
+                    child: TextButton(
+                      onPressed: () {
+                        getRandomArt();
+                      },
+                      child: Text(
+                        "Explore Art",
+                        style: TextStyle(
+                          fontFamily: 'Barcode', // TODO fix font for button
+                          color:
+                              isDarkColor(bgColor)
+                                  ? Colors.white
+                                  : Colors.black,
+                          fontSize: 20,
+                        ),
                       ),
                     ),
                   ),
+
+                  // child: GestureDetector(
+                  //   child: Image.asset(
+                  //     scale: 10,
+                  //     'd7apevh-970a3f31-8739-425a-ace8-785934f39ce7.png',
+                  //   ),
+                  //   onTap: () {
+                  //     getRandomArt();
+                  //   },
+                  // ),
+
+                  // child: ElevatedButton(
+                  //   //TODO change button style
+                  //   onPressed: () {
+                  //     getRandomArt();
+                  //   },
+                  //   style: ElevatedButton.styleFrom(backgroundColor: bgColor),
+                  //   child: Text(
+                  //     "Explore Art",
+                  //     style: TextStyle(
+                  //       color:
+                  //           isDarkColor(bgColor) ? Colors.white : Colors.black,
+                  //     ),
+                  //   ),
+                  // ),
                 ),
                 Padding(
                   padding: const EdgeInsets.only(bottom: 30),
@@ -314,8 +354,8 @@ class _ArtHomePageState extends State<ArtHomePage>
                     },
                     icon:
                         isDarkColor(bgColor)
-                            ? Icon(Icons.download_rounded, color: Colors.white,)
-                            : Icon(Icons.download_rounded, color: Colors.black,),
+                            ? Icon(Icons.download_rounded, color: Colors.white)
+                            : Icon(Icons.download_rounded, color: Colors.black),
                   ),
                 ),
               ],
