@@ -72,7 +72,7 @@ class _TitleScreenState extends State<TitleScreen> {
 
 
   String _generateRandomString(int length) {
-    const chars = 'qwertyuiopasdfghjklzxcvbnm123456789!@#%^&*()_+';
+    const chars = '0123456789';
     return List.generate(
       length,
       (index) => chars[_rand.nextInt(chars.length)],

@@ -556,7 +556,7 @@ class _ArtHomePageState extends State<ArtHomePage>
       context: context,
       barrierDismissible: true,
       barrierLabel: 'Artwork Details',
-      barrierColor: Colors.black.withOpacity(0.6),
+      barrierColor: Colors.black.withOpacity(0.7), // Slightly darker for focus
       transitionDuration: const Duration(milliseconds: 300),
       pageBuilder: (context, animation, secondaryAnimation) {
         return Scaffold(
@@ -578,9 +578,15 @@ class _ArtHomePageState extends State<ArtHomePage>
                           child: BackdropFilter(
                             filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
                             child: Container(
-                              width: MediaQuery.of(context).size.width * 0.7,
-                              height: MediaQuery.of(context).size.height * 0.5,
-                              padding: const EdgeInsets.all(24),
+                              width:
+                                  MediaQuery.of(context).size.width *
+                                  0.9, // Increased from 0.7
+                              height:
+                                  MediaQuery.of(context).size.height *
+                                  0.8, // Increased from 0.5
+                              padding: const EdgeInsets.all(
+                                32,
+                              ), // Increased padding
                               decoration: BoxDecoration(
                                 color: (backgroundColor ?? Colors.white)
                                     .withOpacity(0.25),
@@ -594,78 +600,132 @@ class _ArtHomePageState extends State<ArtHomePage>
                                 onTap: () {},
                                 child: Row(
                                   children: [
+                                    // Image section - increased flex
                                     Expanded(
-                                      flex: 2,
-                                      child: ClipRRect(
-                                        borderRadius: BorderRadius.circular(16),
-                                        child: CachedNetworkImage(
-                                          imageUrl: imageURL,
-                                          fit: BoxFit.contain,
-                                          fadeInDuration: const Duration(
-                                            milliseconds: 300,
-                                          ), // Faster for modal
-                                          fadeOutDuration: const Duration(
-                                            milliseconds: 150,
+                                      flex:
+                                          3, // Increased from 2 for larger image
+                                      child: Container(
+                                        constraints: BoxConstraints(
+                                          maxHeight:
+                                              MediaQuery.of(
+                                                context,
+                                              ).size.height *
+                                              0.7,
+                                        ),
+                                        child: ClipRRect(
+                                          borderRadius: BorderRadius.circular(
+                                            16,
                                           ),
-                                          imageBuilder:
-                                              (context, imageProvider) =>
-                                                  ClipRRect(
+                                          child: CachedNetworkImage(
+                                            imageUrl: imageURL,
+                                            fit: BoxFit.contain,
+                                            fadeInDuration: const Duration(
+                                              milliseconds: 300,
+                                            ),
+                                            fadeOutDuration: const Duration(
+                                              milliseconds: 150,
+                                            ),
+                                            imageBuilder:
+                                                (
+                                                  context,
+                                                  imageProvider,
+                                                ) => ClipRRect(
+                                                  borderRadius:
+                                                      BorderRadius.circular(16),
+                                                  child: Image(
+                                                    image: imageProvider,
+                                                    fit: BoxFit.contain,
+                                                    filterQuality:
+                                                        FilterQuality
+                                                            .high, // Higher quality for inspection
+                                                  ),
+                                                ),
+                                            placeholder:
+                                                (context, url) => Container(
+                                                  decoration: BoxDecoration(
                                                     borderRadius:
                                                         BorderRadius.circular(
                                                           16,
                                                         ),
-                                                    child: Image(
-                                                      image: imageProvider,
-                                                      fit: BoxFit.contain,
-                                                      filterQuality:
-                                                          FilterQuality.medium,
-                                                    ),
+                                                    color: (backgroundColor ??
+                                                            Colors.white)
+                                                        .withOpacity(0.2),
                                                   ),
-                                          placeholder:
-                                              (context, url) => Container(
-                                                decoration: BoxDecoration(
-                                                  borderRadius:
-                                                      BorderRadius.circular(16),
-                                                  color: (backgroundColor ??
-                                                          Colors.white)
-                                                      .withOpacity(0.2),
-                                                ),
-                                                child: Center(
-                                                  child: CircularProgressIndicator(
-                                                    valueColor:
-                                                        AlwaysStoppedAnimation<
-                                                          Color
-                                                        >(Colors.white70),
-                                                  ),
-                                                ),
-                                              ),
-                                          errorWidget:
-                                              (context, url, error) =>
-                                                  Container(
-                                                    decoration: BoxDecoration(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                            16,
+                                                  child: Center(
+                                                    child: Column(
+                                                      mainAxisSize:
+                                                          MainAxisSize.min,
+                                                      children: [
+                                                        CircularProgressIndicator(
+                                                          valueColor:
+                                                              AlwaysStoppedAnimation<
+                                                                Color
+                                                              >(Colors.white70),
+                                                        ),
+                                                        const SizedBox(
+                                                          height: 16,
+                                                        ),
+                                                        const Text(
+                                                          'Loading artwork...',
+                                                          style: TextStyle(
+                                                            color:
+                                                                Colors.white70,
+                                                            fontSize: 14,
                                                           ),
-                                                      color: Colors.white
-                                                          .withOpacity(0.1),
-                                                    ),
-                                                    child: const Center(
-                                                      child: Icon(
-                                                        Icons.error_outline,
-                                                        size: 48,
-                                                        color: Colors.white70,
-                                                      ),
+                                                        ),
+                                                      ],
                                                     ),
                                                   ),
+                                                ),
+                                            errorWidget:
+                                                (
+                                                  context,
+                                                  url,
+                                                  error,
+                                                ) => Container(
+                                                  decoration: BoxDecoration(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                          16,
+                                                        ),
+                                                    color: Colors.white
+                                                        .withOpacity(0.1),
+                                                  ),
+                                                  child: const Center(
+                                                    child: Column(
+                                                      mainAxisSize:
+                                                          MainAxisSize.min,
+                                                      children: [
+                                                        Icon(
+                                                          Icons.error_outline,
+                                                          size: 48,
+                                                          color: Colors.white70,
+                                                        ),
+                                                        SizedBox(height: 8),
+                                                        Text(
+                                                          'Failed to load image',
+                                                          style: TextStyle(
+                                                            color:
+                                                                Colors.white70,
+                                                            fontSize: 14,
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ),
+                                          ),
                                         ),
                                       ),
                                     ),
-                                    const SizedBox(width: 24),
+                                    const SizedBox(
+                                      width: 32,
+                                    ), // Increased spacing
+                                    // Details section - made scrollable for long descriptions
                                     Expanded(
-                                      flex: 3,
-                                      child: Align(
-                                        alignment: Alignment.topLeft,
+                                      flex:
+                                          2, // Reduced from 3 to give more space to image
+                                      child: SingleChildScrollView(
                                         child: Column(
                                           crossAxisAlignment:
                                               CrossAxisAlignment.start,
@@ -688,50 +748,69 @@ class _ArtHomePageState extends State<ArtHomePage>
                                                   );
                                                 }
                                               },
-                                              //TODO make right side scrollable
                                               child: Text(
                                                 artwork.title,
                                                 style: const TextStyle(
-                                                  fontSize: 28,
+                                                  fontSize:
+                                                      32, // Increased font size
                                                   fontWeight: FontWeight.bold,
                                                   color: Colors.white,
                                                   decoration:
                                                       TextDecoration.underline,
                                                   decorationColor:
                                                       Colors.white70,
+                                                  height: 1.2,
                                                 ),
                                               ),
                                             ),
-                                            const SizedBox(height: 12),
+                                            const SizedBox(
+                                              height: 16,
+                                            ), // Increased spacing
+
                                             Text(
                                               artwork.artist,
                                               style: const TextStyle(
-                                                fontSize: 20,
+                                                fontSize:
+                                                    24, // Increased font size
                                                 color: Colors.white70,
+                                                fontStyle: FontStyle.italic,
                                               ),
                                             ),
-                                            const SizedBox(height: 20),
-                                            if (_description != '')
+
+                                            if (_date != '') ...[
+                                              const SizedBox(height: 12),
+                                              Text(
+                                                _date,
+                                                style: const TextStyle(
+                                                  color: Colors.white60,
+                                                  fontSize: 18,
+                                                ),
+                                              ),
+                                            ],
+
+                                            if (_description != '') ...[
+                                              const SizedBox(height: 24),
+                                              const Text(
+                                                'About this artwork:',
+                                                style: TextStyle(
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.w600,
+                                                  color: Colors.white70,
+                                                ),
+                                              ),
+                                              const SizedBox(height: 8),
                                               Text(
                                                 artwork.description,
                                                 style: const TextStyle(
                                                   fontSize: 16,
-                                                  color: Colors.white60,
+                                                  color: Colors.white70,
+                                                  height:
+                                                      1.5, // Better line spacing
                                                 ),
                                               ),
-                                            const Spacer(),
-                                            if (_date != '')
-                                              Align(
-                                                alignment:
-                                                    Alignment.bottomRight,
-                                                child: Text(
-                                                  _date,
-                                                  style: const TextStyle(
-                                                    color: Colors.white70,
-                                                    fontSize: 14,
-                                                  ),
-                                                ),
-                                              ),
+                                            ],
+
+                                            const SizedBox(height: 32),
                                           ],
                                         ),
                                       ),
@@ -743,12 +822,24 @@ class _ArtHomePageState extends State<ArtHomePage>
                           ),
                         ),
                       ),
+
+                      // Close button
                       Positioned(
-                        top: 16,
-                        right: 16,
-                        child: IconButton(
-                          icon: const Icon(Icons.close, color: Colors.white),
-                          onPressed: () => Navigator.of(context).pop(),
+                        top: 24, // Adjusted for larger overlay
+                        right: 24,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.black.withOpacity(0.3),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: IconButton(
+                            icon: const Icon(
+                              Icons.close,
+                              color: Colors.white,
+                              size: 24,
+                            ),
+                            onPressed: () => Navigator.of(context).pop(),
+                          ),
                         ),
                       ),
                     ],
