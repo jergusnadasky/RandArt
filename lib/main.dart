@@ -2,6 +2,7 @@
 import 'package:art_gen/pages/title_page.dart';
 import 'package:flutter/material.dart';
 import 'package:art_gen/pages/home_page.dart';
+import 'package:art_gen/pages/animated_title_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -17,10 +18,11 @@ class MyApp extends StatelessWidget {
       
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
+        fontFamily: 'DIN', //TODO find better font
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: TitlePage(),//const ArtHomePage("RandArt"),
+      home: TitleScreen(),//const ArtHomePage("RandArt"),
       routes: {
       '/homepage' :(context) => ArtHomePage("RandArt"),
 

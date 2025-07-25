@@ -43,6 +43,7 @@ class _TitlePageState extends State<TitlePage> {
             );
           },
           child: Image.asset(
+            scale: 3,
             _showBlackLogo ? "logo_black.png" : "logo_white.png",
             fit: BoxFit.contain,
           ),

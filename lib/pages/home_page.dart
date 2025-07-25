@@ -308,14 +308,14 @@ class _ArtHomePageState extends State<ArtHomePage>
                         getRandomArt();
                       },
                       child: Text(
-                        "Explore Art",
+                        "EXPLORE ART",
                         style: TextStyle(
-                          fontFamily: 'Barcode', // TODO fix font for button
+                          fontFamily: 'dots', // TODO fix font for button
                           color:
                               isDarkColor(bgColor)
                                   ? Colors.white
                                   : Colors.black,
-                          fontSize: 20,
+                          fontSize: 25,
                         ),
                       ),
                     ),
@@ -348,14 +348,19 @@ class _ArtHomePageState extends State<ArtHomePage>
                 ),
                 Padding(
                   padding: const EdgeInsets.only(bottom: 30),
-                  child: IconButton(
+                  child: TextButton(
                     onPressed: () {
                       downloadImageWeb(imageURL, artistName, title);
                     },
-                    icon:
-                        isDarkColor(bgColor)
-                            ? Icon(Icons.download_rounded, color: Colors.white)
-                            : Icon(Icons.download_rounded, color: Colors.black),
+                    child: Text(
+                      "DOWNLOAD",
+                      style: TextStyle(
+                        fontFamily: 'dots',
+                        color:
+                            isDarkColor(bgColor) ? Colors.white : Colors.black,
+                        fontSize: 25,
+                      ),
+                    ),
                   ),
                 ),
               ],
@@ -371,7 +376,7 @@ class _ArtHomePageState extends State<ArtHomePage>
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      border: Border.all(color: Colors.black, width: 1),
+                      border: Border.all(color: Colors.black, width: 0.5),
                       boxShadow: [
                         BoxShadow(blurRadius: 8, color: Colors.black26),
                       ],
@@ -391,17 +396,78 @@ class _ArtHomePageState extends State<ArtHomePage>
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              textAlign: TextAlign.end,
-                              "HEX: #${_extractedColors[_hoveredColorIndex!].color.value.toRadixString(16).substring(2).toUpperCase()}",
+                            Row(
+                              children: [
+                                Text(
+                                  style: TextStyle(
+                                    fontSize: 11,
+                                    fontFamily: 'Akkurat',
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                  textAlign: TextAlign.end,
+                                  "HEX: #",
+                                ),
+                                Text(
+                                  style: TextStyle(
+                                    fontSize: 11,
+                                    fontFamily: 'Akkurat',
+                                    fontWeight: FontWeight.w400,
+                                  ),
+                                  textAlign: TextAlign.end,
+                                  _extractedColors[_hoveredColorIndex!]
+                                      .color
+                                      .value
+                                      .toRadixString(16)
+                                      .substring(2)
+                                      .toUpperCase(),
+                                ),
+                              ],
                             ),
-                            Text(
-                              textAlign: TextAlign.end,
-                              "RGB: (${_extractedColors[_hoveredColorIndex!].color.red}, ${_extractedColors[_hoveredColorIndex!].color.green}, ${_extractedColors[_hoveredColorIndex!].color.blue})",
+                            Row(
+                              children: [
+                                Text(
+                                  style: TextStyle(
+                                    fontSize: 11,
+                                    fontFamily: 'Akkurat',
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                  textAlign: TextAlign.end,
+                                  "RGB: (",
+                                ),
+                                Text(
+                                  style: TextStyle(
+                                    fontSize: 11,
+                                    fontFamily: 'Akkurat',
+                                    fontWeight: FontWeight.w400,
+                                  ),
+                                  textAlign: TextAlign.end,
+                                  "${_extractedColors[_hoveredColorIndex!].color.red}, ${_extractedColors[_hoveredColorIndex!].color.green}, ${_extractedColors[_hoveredColorIndex!].color.blue})",
+                                ),
+                              ],
                             ),
-                            Text(
-                              textAlign: TextAlign.end,
-                              "HSL: ${HSLColor.fromColor(_extractedColors[_hoveredColorIndex!].color).toString()}",
+                            Row(
+                              children: [
+                                Text(
+                                  style: TextStyle(
+                                    fontSize: 11,
+                                    fontFamily: 'Akkurat',
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                  textAlign: TextAlign.start,
+                                  "HSL: ",
+                                ),
+                                Text(
+                                  style: TextStyle(
+                                    fontSize: 11,
+                                    fontFamily: 'Akkurat',
+                                    fontWeight: FontWeight.w400,
+                                  ),
+                                  textAlign: TextAlign.end,
+                                  HSLColor.fromColor(
+                                    _extractedColors[_hoveredColorIndex!].color,
+                                  ).toString(),
+                                ),
+                              ],
                             ),
                           ],
                         ),

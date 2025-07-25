@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:art_gen/pages/home_page.dart';
+
 //TODO add about page stuff
 class AboutPage extends StatelessWidget {
   final Color bgColor;
@@ -32,12 +33,36 @@ class AboutPage extends StatelessWidget {
         ),
       ),
       body: Center(
-        child: Text(
-          'This app fetches random artworks and displays the title and artist.',
-          style: TextStyle(color: textColor, fontSize: 18),
-          textAlign: TextAlign.center,
+        child: Column(
+          children: [
+            Text(
+              "This is DIN #1234567890",
+              style: TextStyle(fontFamily: 'DIN', fontWeight: FontWeight.w400),
+            ),
+            Text(
+              "This is DIN BOLD #1234567890",
+              style: TextStyle(fontFamily: 'DIN', fontWeight: FontWeight.w700),
+            ),
+            Text("This is Akkurat #1234567890", style: TextStyle(fontFamily: 'Akkurat')),
+            Text(
+              "This is Akkurat BOLD #1234567890",
+              style: TextStyle(
+                fontFamily: 'Akkurat',
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
 }
+
+
+
+
+//  child: Text(
+//           'This app fetches random artworks and displays the title and artist.',
+//           style: TextStyle(color: textColor, fontSize: 18, fontFamily: 'Akkurat'),
+//           textAlign: TextAlign.center,
+//         ),
