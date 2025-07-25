@@ -25,8 +25,6 @@ class ArtHomePage extends StatefulWidget {
   @override
   State<ArtHomePage> createState() => _ArtHomePageState();
 }
-//TODO change universal font to something nicer
-//TODO add bottom bar with number of artworks viewed out of however many were queried in both APIs. Do the math and increment on every click of the button.
 
 class _ArtHomePageState extends State<ArtHomePage>
     with AfterLayoutMixin<ArtHomePage> {
@@ -45,6 +43,7 @@ class _ArtHomePageState extends State<ArtHomePage>
   Offset _hoverPosition = Offset.zero;
   bool _isFirstLoad = true;
   double _scaffoldOpacity = 0.0;
+  bool _isLoadingArt = false;
 
   final randomNum = Random();
 
@@ -56,8 +55,8 @@ class _ArtHomePageState extends State<ArtHomePage>
     return _isFirstLoad
         ? AnimatedOpacity(
           opacity: _scaffoldOpacity,
-          duration: const Duration(milliseconds: 800), // Reduced from 2 seconds
-          curve: Curves.easeInOut,
+          duration: const Duration(milliseconds: 400), // Reduced from 800ms
+          curve: Curves.easeOut, // Faster curve
           child: _buildScaffold(),
         )
         : _buildScaffold();
@@ -76,8 +75,8 @@ class _ArtHomePageState extends State<ArtHomePage>
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(kToolbarHeight),
         child: AnimatedContainer(
-          duration: const Duration(milliseconds: 800),
-          curve: Curves.easeInOut,
+          duration: const Duration(milliseconds: 600), // Reduced from 800ms
+          curve: Curves.easeOut,
           color: bgColor,
           child: AppBar(
             automaticallyImplyLeading: false,
@@ -118,14 +117,14 @@ class _ArtHomePageState extends State<ArtHomePage>
       ),
 
       body: AnimatedContainer(
-        duration: const Duration(milliseconds: 400),
-        curve: Curves.easeInOut,
+        duration: const Duration(milliseconds: 300), // Reduced from 400ms
+        curve: Curves.easeOut,
         color: bgColor,
         child: Stack(
           children: [
             AnimatedContainer(
-              duration: const Duration(milliseconds: 800),
-              curve: Curves.easeInOut,
+              duration: const Duration(milliseconds: 600), // Reduced from 800ms
+              curve: Curves.easeOut,
               color: overlay,
             ),
             Column(
@@ -142,7 +141,7 @@ class _ArtHomePageState extends State<ArtHomePage>
                           if (imageURL.isNotEmpty)
                             AnimatedOpacity(
                               opacity: imageVisible ? 1.0 : 0.0,
-                              duration: const Duration(milliseconds: 600),
+                              duration: const Duration(milliseconds: 400), // Reduced from 600ms
                               child: Column(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
@@ -177,9 +176,9 @@ class _ArtHomePageState extends State<ArtHomePage>
                                         child: AnimatedScale(
                                           scale: _hovering ? 1.1 : 1.0,
                                           duration: const Duration(
-                                            milliseconds: 300,
+                                            milliseconds: 200, // Reduced from 300ms
                                           ),
-                                          curve: Curves.easeInOut,
+                                          curve: Curves.easeOut,
                                           child: ConstrainedBox(
                                             constraints: const BoxConstraints(
                                               maxHeight: 350,
@@ -191,11 +190,14 @@ class _ArtHomePageState extends State<ArtHomePage>
                                                 imageUrl: imageURL,
                                                 fit: BoxFit.contain,
                                                 fadeInDuration: const Duration(
-                                                  milliseconds: 400,
-                                                ), // Reduced from 800ms
+                                                  milliseconds: 200, // Reduced from 400ms
+                                                ),
                                                 fadeOutDuration: const Duration(
-                                                  milliseconds: 200,
-                                                ), // Reduced from 300ms
+                                                  milliseconds: 100, // Reduced from 200ms
+                                                ),
+                                                // Add memory cache settings for better performance
+                                                memCacheWidth: 800, // Limit memory usage
+                                                memCacheHeight: 800,
                                                 imageBuilder:
                                                     (
                                                       context,
@@ -208,7 +210,6 @@ class _ArtHomePageState extends State<ArtHomePage>
                                                       child: Image(
                                                         image: imageProvider,
                                                         fit: BoxFit.contain,
-                                                        // This helps with performance
                                                         filterQuality:
                                                             FilterQuality
                                                                 .medium,
@@ -281,7 +282,7 @@ class _ArtHomePageState extends State<ArtHomePage>
                                   if (_extractedColors.isNotEmpty)
                                     Container(
                                       height: 20,
-                                      width: 200, // adjust width as needed
+                                      width: 200,
                                       child: Row(
                                         crossAxisAlignment:
                                             CrossAxisAlignment.stretch,
@@ -363,6 +364,27 @@ class _ArtHomePageState extends State<ArtHomePage>
                                 ],
                               ),
                             ),
+                          // Show loading indicator when no image is loaded yet
+                          if (imageURL.isEmpty && _isLoadingArt)
+                            Container(
+                              height: 350,
+                              width: 200,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(16),
+                                color: Colors.transparent,
+                              ),
+                              child: const Center(
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    CircularProgressIndicator(
+                                      color: Colors.black,
+                                    ),
+                                    SizedBox(height: 16),
+                                  ],
+                                ),
+                              ),
+                            ),
 
                           const SizedBox(height: 16),
                         ],
@@ -373,7 +395,6 @@ class _ArtHomePageState extends State<ArtHomePage>
 
                 Padding(
                   padding: const EdgeInsets.only(bottom: 30),
-
                   child: GestureDetector(
                     child: TextButton(
                       style: const ButtonStyle(
@@ -381,13 +402,13 @@ class _ArtHomePageState extends State<ArtHomePage>
                           Colors.transparent,
                         ),
                       ),
-                      onPressed: () {
+                      onPressed: _isLoadingArt ? null : () {
                         getRandomArt();
                       },
                       child: Text(
-                        "EXPLORE ART",
+                        _isLoadingArt ? "LOADING..." : "EXPLORE ART",
                         style: TextStyle(
-                          fontFamily: 'dots', // TODO fix font for button
+                          fontFamily: 'dots',
                           color:
                               isDarkColor(bgColor)
                                   ? Colors.white
@@ -404,15 +425,16 @@ class _ArtHomePageState extends State<ArtHomePage>
                     style: const ButtonStyle(
                       overlayColor: WidgetStatePropertyAll(Colors.transparent),
                     ),
-                    onPressed: () {
+                    onPressed: imageURL.isEmpty ? null : () {
                       downloadImageWeb(imageURL, artistName, title);
                     },
                     child: Text(
                       "DOWNLOAD",
                       style: TextStyle(
                         fontFamily: 'dots',
-                        color:
-                            isDarkColor(bgColor) ? Colors.white : Colors.black,
+                        color: imageURL.isEmpty 
+                            ? Colors.grey 
+                            : (isDarkColor(bgColor) ? Colors.white : Colors.black),
                         fontSize: 25,
                       ),
                     ),
@@ -423,7 +445,7 @@ class _ArtHomePageState extends State<ArtHomePage>
             if (_hoveredColorIndex != null)
               Positioned(
                 left:
-                    _hoverPosition.dx + 10, // Changes popup horizontal position
+                    _hoverPosition.dx + 10,
                 top: _hoverPosition.dy + 10,
                 child: Material(
                   color: Colors.transparent,
@@ -544,6 +566,7 @@ class _ArtHomePageState extends State<ArtHomePage>
       artistName = "";
       dominantColor = Colors.white;
       imageVisible = true;
+      _isLoadingArt = false;
     });
   }
 
@@ -556,8 +579,8 @@ class _ArtHomePageState extends State<ArtHomePage>
       context: context,
       barrierDismissible: true,
       barrierLabel: 'Artwork Details',
-      barrierColor: Colors.black.withOpacity(0.7), // Slightly darker for focus
-      transitionDuration: const Duration(milliseconds: 300),
+      barrierColor: Colors.black.withOpacity(0.7),
+      transitionDuration: const Duration(milliseconds: 200), // Reduced from 300ms
       pageBuilder: (context, animation, secondaryAnimation) {
         return Scaffold(
           backgroundColor: Colors.transparent,
@@ -580,13 +603,13 @@ class _ArtHomePageState extends State<ArtHomePage>
                             child: Container(
                               width:
                                   MediaQuery.of(context).size.width *
-                                  0.9, // Increased from 0.7
+                                  0.9,
                               height:
                                   MediaQuery.of(context).size.height *
-                                  0.8, // Increased from 0.5
+                                  0.8,
                               padding: const EdgeInsets.all(
                                 32,
-                              ), // Increased padding
+                              ),
                               decoration: BoxDecoration(
                                 color: (backgroundColor ?? Colors.white)
                                     .withOpacity(0.25),
@@ -600,10 +623,8 @@ class _ArtHomePageState extends State<ArtHomePage>
                                 onTap: () {},
                                 child: Row(
                                   children: [
-                                    // Image section - increased flex
                                     Expanded(
-                                      flex:
-                                          3, // Increased from 2 for larger image
+                                      flex: 3,
                                       child: Container(
                                         constraints: BoxConstraints(
                                           maxHeight:
@@ -620,10 +641,10 @@ class _ArtHomePageState extends State<ArtHomePage>
                                             imageUrl: imageURL,
                                             fit: BoxFit.contain,
                                             fadeInDuration: const Duration(
-                                              milliseconds: 300,
+                                              milliseconds: 200, // Reduced from 300ms
                                             ),
                                             fadeOutDuration: const Duration(
-                                              milliseconds: 150,
+                                              milliseconds: 100, // Reduced from 150ms
                                             ),
                                             imageBuilder:
                                                 (
@@ -636,8 +657,7 @@ class _ArtHomePageState extends State<ArtHomePage>
                                                     image: imageProvider,
                                                     fit: BoxFit.contain,
                                                     filterQuality:
-                                                        FilterQuality
-                                                            .high, // Higher quality for inspection
+                                                        FilterQuality.high,
                                                   ),
                                                 ),
                                             placeholder:
@@ -720,11 +740,9 @@ class _ArtHomePageState extends State<ArtHomePage>
                                     ),
                                     const SizedBox(
                                       width: 32,
-                                    ), // Increased spacing
-                                    // Details section - made scrollable for long descriptions
+                                    ),
                                     Expanded(
-                                      flex:
-                                          2, // Reduced from 3 to give more space to image
+                                      flex: 2,
                                       child: SingleChildScrollView(
                                         child: Column(
                                           crossAxisAlignment:
@@ -751,8 +769,7 @@ class _ArtHomePageState extends State<ArtHomePage>
                                               child: Text(
                                                 artwork.title,
                                                 style: const TextStyle(
-                                                  fontSize:
-                                                      32, // Increased font size
+                                                  fontSize: 32,
                                                   fontWeight: FontWeight.bold,
                                                   color: Colors.white,
                                                   decoration:
@@ -765,13 +782,12 @@ class _ArtHomePageState extends State<ArtHomePage>
                                             ),
                                             const SizedBox(
                                               height: 16,
-                                            ), // Increased spacing
+                                            ),
 
                                             Text(
                                               artwork.artist,
                                               style: const TextStyle(
-                                                fontSize:
-                                                    24, // Increased font size
+                                                fontSize: 24,
                                                 color: Colors.white70,
                                                 fontStyle: FontStyle.italic,
                                               ),
@@ -804,8 +820,7 @@ class _ArtHomePageState extends State<ArtHomePage>
                                                 style: const TextStyle(
                                                   fontSize: 16,
                                                   color: Colors.white70,
-                                                  height:
-                                                      1.5, // Better line spacing
+                                                  height: 1.5,
                                                 ),
                                               ),
                                             ],
@@ -823,9 +838,8 @@ class _ArtHomePageState extends State<ArtHomePage>
                         ),
                       ),
 
-                      // Close button
                       Positioned(
-                        top: 24, // Adjusted for larger overlay
+                        top: 24,
                         right: 24,
                         child: Container(
                           decoration: BoxDecoration(
@@ -855,91 +869,106 @@ class _ArtHomePageState extends State<ArtHomePage>
 
   @override
   void afterFirstLayout(BuildContext context) {
-    setState(() {
-      _scaffoldOpacity = 1.0;
-    });
-
-    // Reduced delay before loading first artwork
-    Future.delayed(const Duration(milliseconds: 800), () {
-      // Reduced from 2 seconds
-      setState(() {
-        _isFirstLoad = false;
-      });
-      getRandomArt();
+    // Start loading art immediately
+    getRandomArt();
+    
+    // Show UI after a very short delay
+    Future.delayed(const Duration(milliseconds: 100), () {
+      if (mounted) {
+        setState(() {
+          _scaffoldOpacity = 1.0;
+          _isFirstLoad = false;
+        });
+      }
     });
   }
 
   Future<void> getRandomArt() async {
-    // Start fade out immediately
+    if (_isLoadingArt) return; // Prevent multiple simultaneous loads
+    
     setState(() {
+      _isLoadingArt = true;
       imageVisible = false;
     });
 
-    // Minimal delay for fade out (reduced from 300ms)
-    await Future.delayed(const Duration(milliseconds: 100));
+    // Only fade out if we already have an image loaded
+    if (imageURL.isNotEmpty) {
+      await Future.delayed(const Duration(milliseconds: 100));
+    }
 
     final int apiChoice = randomNum.nextInt(2);
     final ChicagoArtService chicagoService = ChicagoArtService();
     Artwork? artwork;
 
-    if (apiChoice == 0) {
-      artwork = await chicagoService.getRandomArtwork();
-    } else {
-      artwork = await MetArtService().getRandomArtwork();
-    }
-
-    if (artwork == null) {
-      _setError("Failed to fetch artwork.");
-      return;
-    }
-
-    // Create a smaller image provider for color processing
-    final smallImageProvider = ResizeImage(
-      NetworkImage(artwork.imageUrl),
-      width: 150,
-      height: 150,
-    );
-
-    // Start both color operations in parallel
-    final paletteFuture = PaletteGenerator.fromImageProvider(
-      smallImageProvider,
-      size: const Size(150, 150),
-    );
-
-    final extractedColorsFuture = extractColorsFromImage(smallImageProvider);
-
-    // Set artwork data immediately so CachedNetworkImage can start loading
-    setState(() {
-      _description = artwork!.description;
-      artworkLink = artwork.link;
-      title = artwork.title;
-      artistName = artwork.artist;
-      imageURL = artwork.imageUrl;
-      _date = artwork.date;
-      // Set a temporary color to start the transition
-      dominantColor = Colors.grey.shade300;
-    });
-
     try {
-      // Wait for both color operations to complete
-      final results = await Future.wait([paletteFuture, extractedColorsFuture]);
+      if (apiChoice == 0) {
+        artwork = await chicagoService.getRandomArtwork();
+      } else {
+        artwork = await MetArtService().getRandomArtwork();
+      }
 
-      final palette = results[0] as PaletteGenerator;
-      final extractedColors = results[1] as List<ColorInfo>;
+      if (artwork == null) {
+        _setError("Failed to fetch artwork.");
+        return;
+      }
 
-      // Update with final colors and show image
+      // Set artwork data immediately - this allows image to start loading
       setState(() {
-        dominantColor = palette.dominantColor?.color ?? Colors.white;
-        _extractedColors = extractedColors;
-        imageVisible = true;
+        _description = artwork!.description;
+        artworkLink = artwork.link;
+        title = artwork.title;
+        artistName = artwork.artist;
+        imageURL = artwork.imageUrl;
+        _date = artwork.date;
+        dominantColor = Colors.grey.shade300; // Temporary color
+        imageVisible = true; // Show immediately
+        _isLoadingArt = false;
       });
+
+      // Process colors in the background without blocking UI
+      _processColorsInBackground(artwork.imageUrl);
+
     } catch (e) {
-      // Fallback if color extraction fails
-      setState(() {
-        dominantColor = Colors.white;
-        _extractedColors = [];
-        imageVisible = true;
-      });
+      _setError("Failed to fetch artwork.");
+    }
+  }
+
+  // Process colors asynchronously without blocking the UI
+  void _processColorsInBackground(String imageUrl) async {
+    try {
+      final smallImageProvider = ResizeImage(
+        NetworkImage(imageUrl),
+        width: 100, // Even smaller for faster processing
+        height: 100,
+      );
+
+      // Process colors with a timeout to prevent hanging
+      final colorFutures = await Future.wait([
+        PaletteGenerator.fromImageProvider(
+          smallImageProvider,
+          size: const Size(100, 100),
+        ).timeout(const Duration(seconds: 3)),
+        extractColorsFromImage(smallImageProvider).timeout(const Duration(seconds: 3)),
+      ]);
+
+      final palette = colorFutures[0] as PaletteGenerator;
+      final extractedColors = colorFutures[1] as List<ColorInfo>;
+
+      // Only update if we're still showing the same image
+      if (mounted && imageURL == imageUrl) {
+        setState(() {
+          dominantColor = palette.dominantColor?.color ?? Colors.white;
+          _extractedColors = extractedColors;
+        });
+      }
+    } catch (e) {
+      // Silently fail color extraction - the image still works
+      if (mounted && imageURL == imageUrl) {
+        setState(() {
+          dominantColor = Colors.white;
+          _extractedColors = [];
+        });
+      }
     }
   }
 }
