@@ -1,5 +1,4 @@
 
-import 'package:art_gen/pages/title_page.dart';
 import 'package:flutter/material.dart';
 import 'package:art_gen/pages/home_page.dart';
 import 'package:art_gen/pages/animated_title_screen.dart';

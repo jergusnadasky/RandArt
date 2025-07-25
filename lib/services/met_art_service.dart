@@ -40,7 +40,7 @@ class MetArtService {
           artist: obj['artistDisplayName'] ?? 'Unknown Artist',
           imageUrl: imageUrl,
           link: obj['objectURL'] ?? '',
-          description: '',
+          description: obj['medium'],
           id: obj['objectID'].toString(),
           date: obj['objectDate'] ?? '', // Optional date field
         );
