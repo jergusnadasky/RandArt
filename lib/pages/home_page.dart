@@ -56,7 +56,7 @@ class _ArtHomePageState extends State<ArtHomePage>
     return _isFirstLoad
         ? AnimatedOpacity(
           opacity: _scaffoldOpacity,
-          duration: const Duration(seconds: 2),
+          duration: const Duration(milliseconds: 800), // Reduced from 2 seconds
           curve: Curves.easeInOut,
           child: _buildScaffold(),
         )
@@ -118,7 +118,7 @@ class _ArtHomePageState extends State<ArtHomePage>
       ),
 
       body: AnimatedContainer(
-        duration: const Duration(milliseconds: 800),
+        duration: const Duration(milliseconds: 400),
         curve: Curves.easeInOut,
         color: bgColor,
         child: Stack(
@@ -142,7 +142,7 @@ class _ArtHomePageState extends State<ArtHomePage>
                           if (imageURL.isNotEmpty)
                             AnimatedOpacity(
                               opacity: imageVisible ? 1.0 : 0.0,
-                              duration: const Duration(seconds: 1),
+                              duration: const Duration(milliseconds: 600),
                               child: Column(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
@@ -177,7 +177,7 @@ class _ArtHomePageState extends State<ArtHomePage>
                                         child: AnimatedScale(
                                           scale: _hovering ? 1.1 : 1.0,
                                           duration: const Duration(
-                                            milliseconds: 500,
+                                            milliseconds: 300,
                                           ),
                                           curve: Curves.easeInOut,
                                           child: ConstrainedBox(
@@ -191,11 +191,83 @@ class _ArtHomePageState extends State<ArtHomePage>
                                                 imageUrl: imageURL,
                                                 fit: BoxFit.contain,
                                                 fadeInDuration: const Duration(
-                                                  milliseconds: 800,
-                                                ),
+                                                  milliseconds: 400,
+                                                ), // Reduced from 800ms
                                                 fadeOutDuration: const Duration(
-                                                  milliseconds: 300,
-                                                ),
+                                                  milliseconds: 200,
+                                                ), // Reduced from 300ms
+                                                imageBuilder:
+                                                    (
+                                                      context,
+                                                      imageProvider,
+                                                    ) => ClipRRect(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                            16,
+                                                          ),
+                                                      child: Image(
+                                                        image: imageProvider,
+                                                        fit: BoxFit.contain,
+                                                        // This helps with performance
+                                                        filterQuality:
+                                                            FilterQuality
+                                                                .medium,
+                                                      ),
+                                                    ),
+                                                placeholder:
+                                                    (context, url) => Container(
+                                                      height: 300,
+                                                      decoration: BoxDecoration(
+                                                        borderRadius:
+                                                            BorderRadius.circular(
+                                                              16,
+                                                            ),
+                                                        color:
+                                                            dominantColor
+                                                                ?.withOpacity(
+                                                                  0.1,
+                                                                ) ??
+                                                            Colors
+                                                                .grey
+                                                                .shade100,
+                                                      ),
+                                                      child: Center(
+                                                        child: CircularProgressIndicator(
+                                                          valueColor:
+                                                              AlwaysStoppedAnimation<
+                                                                Color
+                                                              >(
+                                                                dominantColor ??
+                                                                    Colors.grey,
+                                                              ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                errorWidget:
+                                                    (
+                                                      context,
+                                                      url,
+                                                      error,
+                                                    ) => Container(
+                                                      height: 300,
+                                                      decoration: BoxDecoration(
+                                                        borderRadius:
+                                                            BorderRadius.circular(
+                                                              16,
+                                                            ),
+                                                        color:
+                                                            Colors
+                                                                .grey
+                                                                .shade100,
+                                                      ),
+                                                      child: const Center(
+                                                        child: Icon(
+                                                          Icons.error_outline,
+                                                          size: 48,
+                                                          color: Colors.grey,
+                                                        ),
+                                                      ),
+                                                    ),
                                               ),
                                             ),
                                           ),
@@ -529,6 +601,63 @@ class _ArtHomePageState extends State<ArtHomePage>
                                         child: CachedNetworkImage(
                                           imageUrl: imageURL,
                                           fit: BoxFit.contain,
+                                          fadeInDuration: const Duration(
+                                            milliseconds: 300,
+                                          ), // Faster for modal
+                                          fadeOutDuration: const Duration(
+                                            milliseconds: 150,
+                                          ),
+                                          imageBuilder:
+                                              (context, imageProvider) =>
+                                                  ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                          16,
+                                                        ),
+                                                    child: Image(
+                                                      image: imageProvider,
+                                                      fit: BoxFit.contain,
+                                                      filterQuality:
+                                                          FilterQuality.medium,
+                                                    ),
+                                                  ),
+                                          placeholder:
+                                              (context, url) => Container(
+                                                decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(16),
+                                                  color: (backgroundColor ??
+                                                          Colors.white)
+                                                      .withOpacity(0.2),
+                                                ),
+                                                child: Center(
+                                                  child: CircularProgressIndicator(
+                                                    valueColor:
+                                                        AlwaysStoppedAnimation<
+                                                          Color
+                                                        >(Colors.white70),
+                                                  ),
+                                                ),
+                                              ),
+                                          errorWidget:
+                                              (context, url, error) =>
+                                                  Container(
+                                                    decoration: BoxDecoration(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                            16,
+                                                          ),
+                                                      color: Colors.white
+                                                          .withOpacity(0.1),
+                                                    ),
+                                                    child: const Center(
+                                                      child: Icon(
+                                                        Icons.error_outline,
+                                                        size: 48,
+                                                        color: Colors.white70,
+                                                      ),
+                                                    ),
+                                                  ),
                                         ),
                                       ),
                                     ),
@@ -639,7 +768,9 @@ class _ArtHomePageState extends State<ArtHomePage>
       _scaffoldOpacity = 1.0;
     });
 
-    Future.delayed(const Duration(seconds: 2), () {
+    // Reduced delay before loading first artwork
+    Future.delayed(const Duration(milliseconds: 800), () {
+      // Reduced from 2 seconds
       setState(() {
         _isFirstLoad = false;
       });
@@ -648,18 +779,20 @@ class _ArtHomePageState extends State<ArtHomePage>
   }
 
   Future<void> getRandomArt() async {
+    // Start fade out immediately
     setState(() {
       imageVisible = false;
     });
 
-    await Future.delayed(const Duration(milliseconds: 300));
+    // Minimal delay for fade out (reduced from 300ms)
+    await Future.delayed(const Duration(milliseconds: 100));
 
     final int apiChoice = randomNum.nextInt(2);
     final ChicagoArtService chicagoService = ChicagoArtService();
     Artwork? artwork;
 
     if (apiChoice == 0) {
-      artwork = await chicagoService.getRandomArtwork(); //TODO check copyright
+      artwork = await chicagoService.getRandomArtwork();
     } else {
       artwork = await MetArtService().getRandomArtwork();
     }
@@ -669,25 +802,54 @@ class _ArtHomePageState extends State<ArtHomePage>
       return;
     }
 
-    final palette = await PaletteGenerator.fromImageProvider(
+    // Create a smaller image provider for color processing
+    final smallImageProvider = ResizeImage(
       NetworkImage(artwork.imageUrl),
-      size: const Size(200, 200),
+      width: 150,
+      height: 150,
     );
 
-    _extractedColors = await extractColorsFromImage(
-      NetworkImage(artwork.imageUrl),
+    // Start both color operations in parallel
+    final paletteFuture = PaletteGenerator.fromImageProvider(
+      smallImageProvider,
+      size: const Size(150, 150),
     );
 
+    final extractedColorsFuture = extractColorsFromImage(smallImageProvider);
+
+    // Set artwork data immediately so CachedNetworkImage can start loading
     setState(() {
       _description = artwork!.description;
       artworkLink = artwork.link;
       title = artwork.title;
       artistName = artwork.artist;
       imageURL = artwork.imageUrl;
-      dominantColor = palette.dominantColor?.color ?? Colors.white;
-      imageVisible = true;
       _date = artwork.date;
+      // Set a temporary color to start the transition
+      dominantColor = Colors.grey.shade300;
     });
+
+    try {
+      // Wait for both color operations to complete
+      final results = await Future.wait([paletteFuture, extractedColorsFuture]);
+
+      final palette = results[0] as PaletteGenerator;
+      final extractedColors = results[1] as List<ColorInfo>;
+
+      // Update with final colors and show image
+      setState(() {
+        dominantColor = palette.dominantColor?.color ?? Colors.white;
+        _extractedColors = extractedColors;
+        imageVisible = true;
+      });
+    } catch (e) {
+      // Fallback if color extraction fails
+      setState(() {
+        dominantColor = Colors.white;
+        _extractedColors = [];
+        imageVisible = true;
+      });
+    }
   }
 }
 
