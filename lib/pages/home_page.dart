@@ -304,6 +304,11 @@ class _ArtHomePageState extends State<ArtHomePage>
 
                   child: GestureDetector(
                     child: TextButton(
+                      style: const ButtonStyle(
+                        overlayColor: WidgetStatePropertyAll(
+                          Colors.transparent,
+                        ),
+                      ),
                       onPressed: () {
                         getRandomArt();
                       },
@@ -320,35 +325,13 @@ class _ArtHomePageState extends State<ArtHomePage>
                       ),
                     ),
                   ),
-
-                  // child: GestureDetector(
-                  //   child: Image.asset(
-                  //     scale: 10,
-                  //     'd7apevh-970a3f31-8739-425a-ace8-785934f39ce7.png',
-                  //   ),
-                  //   onTap: () {
-                  //     getRandomArt();
-                  //   },
-                  // ),
-
-                  // child: ElevatedButton(
-                  //   //TODO change button style
-                  //   onPressed: () {
-                  //     getRandomArt();
-                  //   },
-                  //   style: ElevatedButton.styleFrom(backgroundColor: bgColor),
-                  //   child: Text(
-                  //     "Explore Art",
-                  //     style: TextStyle(
-                  //       color:
-                  //           isDarkColor(bgColor) ? Colors.white : Colors.black,
-                  //     ),
-                  //   ),
-                  // ),
                 ),
                 Padding(
                   padding: const EdgeInsets.only(bottom: 30),
                   child: TextButton(
+                    style: const ButtonStyle(
+                      overlayColor: WidgetStatePropertyAll(Colors.transparent),
+                    ),
                     onPressed: () {
                       downloadImageWeb(imageURL, artistName, title);
                     },
