@@ -29,7 +29,7 @@ class _TitleScreenState extends State<TitleScreen> {
 
   void _startTypewriter() {
     _typewriterTimer =
-        Timer.periodic(const Duration(milliseconds: 200), (timer) {
+        Timer.periodic(const Duration(milliseconds: 100), (timer) {
       if (_currentIndex < _text.length) {
         setState(() {
           _displayed += _text[_currentIndex];
@@ -43,34 +43,36 @@ class _TitleScreenState extends State<TitleScreen> {
   }
 
   void _startScramble() {
-    const scrambleDuration = Duration(milliseconds: 1500);
-    final startTime = DateTime.now();
+  const scrambleDuration = Duration(milliseconds: 2000);
+  final startTime = DateTime.now();
 
-    _scrambleTimer =
-        Timer.periodic(const Duration(milliseconds: 20), (timer) {
-      final now = DateTime.now();
-      final elapsed = now.difference(startTime);
+  _scrambleTimer = Timer.periodic(const Duration(milliseconds: 50), (timer) {
+    final now = DateTime.now();
+    final elapsed = now.difference(startTime);
 
-      if (elapsed >= scrambleDuration) {
-        setState(() {
-          _displayed = _text;
-        });
-        timer.cancel();
-      } else {
-        setState(() {
-          _displayed = _generateRandomString(_text.length);
-        });
-      }
-    });
+    if (elapsed >= scrambleDuration) {
+      setState(() {
+        _displayed = _text;
+      });
+      timer.cancel();
+    } else {
+      setState(() {
+        final fixedPart = _text.substring(0, 4); // "rand"
+        final scramblePart = _generateRandomString(3); // scramble "art"
+        _displayed = fixedPart + scramblePart;
+      });
+    }
+  });
 
-    // Start transition halfway through the scramble
-    Future.delayed(const Duration(milliseconds: 700), () {
-      Navigator.of(context).pushReplacement(_createRoute());
-    });
-  }
+  // Start transition halfway through the scramble
+  Future.delayed(const Duration(milliseconds: 800), () {
+    Navigator.of(context).pushReplacement(_createRoute());
+  });
+}
+
 
   String _generateRandomString(int length) {
-    const chars = '0123456789!@#%^&*()';
+    const chars = 'qwertyuiopasdfghjklzxcvbnm123456789!@#%^&*()_+';
     return List.generate(
       length,
       (index) => chars[_rand.nextInt(chars.length)],
@@ -125,7 +127,7 @@ class _TitleScreenState extends State<TitleScreen> {
                   _displayed,
                   style: const TextStyle(
                     fontSize: 24,
-                    fontWeight: FontWeight.w400,
+                    fontWeight: FontWeight.w200,
                     color: Colors.black,
                     fontFamily: 'DIN',
                   ),
