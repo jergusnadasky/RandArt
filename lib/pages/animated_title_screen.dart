@@ -19,7 +19,6 @@ class _TitleScreenState extends State<TitleScreen> {
   Timer? _typewriterTimer;
   Timer? _scrambleTimer;
   final Random _rand = Random();
-  
 
   @override
   void initState() {
@@ -28,8 +27,9 @@ class _TitleScreenState extends State<TitleScreen> {
   }
 
   void _startTypewriter() {
-    _typewriterTimer =
-        Timer.periodic(const Duration(milliseconds: 100), (timer) {
+    _typewriterTimer = Timer.periodic(const Duration(milliseconds: 100), (
+      timer,
+    ) {
       if (_currentIndex < _text.length) {
         setState(() {
           _displayed += _text[_currentIndex];
@@ -43,33 +43,46 @@ class _TitleScreenState extends State<TitleScreen> {
   }
 
   void _startScramble() {
-  const scrambleDuration = Duration(milliseconds: 2000);
-  final startTime = DateTime.now();
+    const scrambleDuration = Duration(milliseconds: 2000);
+    final startTime = DateTime.now();
 
-  _scrambleTimer = Timer.periodic(const Duration(milliseconds: 50), (timer) {
-    final now = DateTime.now();
-    final elapsed = now.difference(startTime);
+    _scrambleTimer = Timer.periodic(const Duration(milliseconds: 50), (timer) {
+      // Check if widget is still mounted before updating state
+      if (!mounted) {
+        timer.cancel();
+        return;
+      }
 
-    if (elapsed >= scrambleDuration) {
+      final now = DateTime.now();
+      final elapsed = now.difference(startTime);
+
+      if (elapsed >= scrambleDuration) {
+        setState(() {
+          _displayed = _text;
+        });
+        timer.cancel();
+      } else {
+        setState(() {
+          final fixedPart = _text.substring(0, 4); // "rand"
+          final scramblePart = _generateRandomString(3); // scramble "art"
+          _displayed = fixedPart + scramblePart;
+        });
+      }
+    });
+
+    // Start transition halfway through the scramble
+    Future.delayed(const Duration(milliseconds: 800), () {
+      // Stop scrambling animation before navigation
+      _scrambleTimer?.cancel();
       setState(() {
-        _displayed = _text;
+        _displayed = _text; // Set final text
       });
-      timer.cancel();
-    } else {
-      setState(() {
-        final fixedPart = _text.substring(0, 4); // "rand"
-        final scramblePart = _generateRandomString(3); // scramble "art"
-        _displayed = fixedPart + scramblePart;
-      });
-    }
-  });
 
-  // Start transition halfway through the scramble
-  Future.delayed(const Duration(milliseconds: 800), () {
-    Navigator.of(context).pushReplacement(_createRoute());
-  });
-}
-
+      if (mounted) {
+        Navigator.of(context).pushReplacement(_createRoute());
+      }
+    });
+  }
 
   String _generateRandomString(int length) {
     const chars = '0123456789';
@@ -81,23 +94,56 @@ class _TitleScreenState extends State<TitleScreen> {
 
   Route _createRoute() {
     return PageRouteBuilder(
-      transitionDuration: const Duration(milliseconds: 1500),
-      pageBuilder: (context, animation, secondaryAnimation) =>
-          const ArtHomePage("RandArt"),
+      transitionDuration: const Duration(milliseconds: 1200), // Slightly faster
+      pageBuilder:
+          (context, animation, secondaryAnimation) =>
+              const ArtHomePage("RandArt"),
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
-        final currentPageSlide =
-            Tween<Offset>(begin: Offset.zero, end: const Offset(-1.0, 0.0))
-                .animate(animation);
-        final newPageSlide =
-            Tween<Offset>(begin: const Offset(1.0, 0.0), end: Offset.zero)
-                .animate(animation);
+        // Only animate the title screen sliding left
+        // The homepage (child) stays stationary at Offset.zero
+        final titleScreenSlide = Tween<Offset>(
+          begin: Offset.zero, // Title starts in place
+          end: const Offset(-1.0, 0.0), // Title slides completely left
+        ).animate(
+          CurvedAnimation(
+            parent: animation,
+            curve: Curves.easeInOutCubic, // Smoother curve for the slide
+          ),
+        );
+
+        // Optional: Add a subtle fade to the homepage as it's revealed
+        final homepageFade = Tween<double>(
+          begin: 0.3, // Start slightly faded
+          end: 1.0, // End fully visible
+        ).animate(
+          CurvedAnimation(
+            parent: animation,
+            curve: const Interval(
+              0.3,
+              1.0,
+              curve: Curves.easeOut,
+            ), // Fade in during last 70%
+          ),
+        );
 
         return Stack(
           children: [
-            SlideTransition(position: newPageSlide, child: child),
-            SlideTransition(
-              position: currentPageSlide,
-              child: _buildTitleScreen(),
+            // Homepage with subtle fade-in effect (optional)
+            FadeTransition(opacity: homepageFade, child: child),
+            // Title screen slides left over the homepage
+            // Add AnimatedBuilder to control when title screen is visible
+            AnimatedBuilder(
+              animation: animation,
+              builder: (context, _) {
+                // Hide title screen completely when animation is done
+                if (animation.value >= 0.95) {
+                  return const SizedBox.shrink(); // Completely remove from widget tree
+                }
+                return SlideTransition(
+                  position: titleScreenSlide,
+                  child: _buildTitleScreen(),
+                );
+              },
             ),
           ],
         );
@@ -113,10 +159,7 @@ class _TitleScreenState extends State<TitleScreen> {
           // Black vertical bar on right edge
           Align(
             alignment: Alignment.centerRight,
-            child: Container(
-              width: 2,
-              color: Colors.black,
-            ),
+            child: Container(width: 2, color: Colors.black),
           ),
           Center(
             child: Row(
@@ -134,11 +177,7 @@ class _TitleScreenState extends State<TitleScreen> {
                 ),
                 const SizedBox(width: 4),
                 // Cursor block
-                Container(
-                  width: 8,
-                  height: 24,
-                  color: Colors.black,
-                ),
+                Container(width: 8, height: 24, color: Colors.black),
               ],
             ),
           ),
