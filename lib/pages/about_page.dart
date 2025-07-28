@@ -26,8 +26,8 @@ class AboutPage extends StatelessWidget {
               height: 250,
               child:
                   isDarkColor(bgColor)
-                      ? Image.asset("logo_white.png", fit: BoxFit.contain)
-                      : Image.asset("logo_black.png", fit: BoxFit.contain),
+                      ? Image.asset("assets/logo_white.png", fit: BoxFit.contain)
+                      : Image.asset("assets/logo_black.png", fit: BoxFit.contain),
             ),
           ),
         ),
@@ -35,7 +35,6 @@ class AboutPage extends StatelessWidget {
       body: Center(
         child: Column(
           children: [
-            Text("test")
           
           ],
         ),

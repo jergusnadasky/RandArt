@@ -89,8 +89,14 @@ class _ArtHomePageState extends State<ArtHomePage>
                   height: 250,
                   child:
                       isDarkColor(bgColor)
-                          ? Image.asset("logo_white.png", fit: BoxFit.contain)
-                          : Image.asset("logo_black.png", fit: BoxFit.contain),
+                          ? Image.asset(
+                            "assets/logo_white.png",
+                            fit: BoxFit.contain,
+                          )
+                          : Image.asset(
+                            "assets/logo_black.png",
+                            fit: BoxFit.contain,
+                          ),
                 ),
               ),
             ),
@@ -141,7 +147,9 @@ class _ArtHomePageState extends State<ArtHomePage>
                           if (imageURL.isNotEmpty)
                             AnimatedOpacity(
                               opacity: imageVisible ? 1.0 : 0.0,
-                              duration: const Duration(milliseconds: 400), // Reduced from 600ms
+                              duration: const Duration(
+                                milliseconds: 400,
+                              ), // Reduced from 600ms
                               child: Column(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
@@ -176,7 +184,8 @@ class _ArtHomePageState extends State<ArtHomePage>
                                         child: AnimatedScale(
                                           scale: _hovering ? 1.1 : 1.0,
                                           duration: const Duration(
-                                            milliseconds: 200, // Reduced from 300ms
+                                            milliseconds:
+                                                200, // Reduced from 300ms
                                           ),
                                           curve: Curves.easeOut,
                                           child: ConstrainedBox(
@@ -190,13 +199,16 @@ class _ArtHomePageState extends State<ArtHomePage>
                                                 imageUrl: imageURL,
                                                 fit: BoxFit.contain,
                                                 fadeInDuration: const Duration(
-                                                  milliseconds: 200, // Reduced from 400ms
+                                                  milliseconds:
+                                                      200, // Reduced from 400ms
                                                 ),
                                                 fadeOutDuration: const Duration(
-                                                  milliseconds: 100, // Reduced from 200ms
+                                                  milliseconds:
+                                                      100, // Reduced from 200ms
                                                 ),
                                                 // Add memory cache settings for better performance
-                                                memCacheWidth: 800, // Limit memory usage
+                                                memCacheWidth:
+                                                    800, // Limit memory usage
                                                 memCacheHeight: 800,
                                                 imageBuilder:
                                                     (
@@ -402,9 +414,12 @@ class _ArtHomePageState extends State<ArtHomePage>
                           Colors.transparent,
                         ),
                       ),
-                      onPressed: _isLoadingArt ? null : () {
-                        getRandomArt();
-                      },
+                      onPressed:
+                          _isLoadingArt
+                              ? null
+                              : () {
+                                getRandomArt();
+                              },
                       child: Text(
                         _isLoadingArt ? "LOADING..." : "EXPLORE ART",
                         style: TextStyle(
@@ -425,16 +440,22 @@ class _ArtHomePageState extends State<ArtHomePage>
                     style: const ButtonStyle(
                       overlayColor: WidgetStatePropertyAll(Colors.transparent),
                     ),
-                    onPressed: imageURL.isEmpty ? null : () {
-                      downloadImageWeb(imageURL, artistName, title);
-                    },
+                    onPressed:
+                        imageURL.isEmpty
+                            ? null
+                            : () {
+                              downloadImageWeb(imageURL, artistName, title);
+                            },
                     child: Text(
                       "DOWNLOAD",
                       style: TextStyle(
                         fontFamily: 'dots',
-                        color: imageURL.isEmpty 
-                            ? Colors.grey 
-                            : (isDarkColor(bgColor) ? Colors.white : Colors.black),
+                        color:
+                            imageURL.isEmpty
+                                ? Colors.grey
+                                : (isDarkColor(bgColor)
+                                    ? Colors.white
+                                    : Colors.black),
                         fontSize: 25,
                       ),
                     ),
@@ -444,8 +465,7 @@ class _ArtHomePageState extends State<ArtHomePage>
             ),
             if (_hoveredColorIndex != null)
               Positioned(
-                left:
-                    _hoverPosition.dx + 10,
+                left: _hoverPosition.dx + 10,
                 top: _hoverPosition.dy + 10,
                 child: Material(
                   color: Colors.transparent,
@@ -580,7 +600,9 @@ class _ArtHomePageState extends State<ArtHomePage>
       barrierDismissible: true,
       barrierLabel: 'Artwork Details',
       barrierColor: Colors.black.withOpacity(0.7),
-      transitionDuration: const Duration(milliseconds: 200), // Reduced from 300ms
+      transitionDuration: const Duration(
+        milliseconds: 200,
+      ), // Reduced from 300ms
       pageBuilder: (context, animation, secondaryAnimation) {
         return Scaffold(
           backgroundColor: Colors.transparent,
@@ -601,15 +623,9 @@ class _ArtHomePageState extends State<ArtHomePage>
                           child: BackdropFilter(
                             filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
                             child: Container(
-                              width:
-                                  MediaQuery.of(context).size.width *
-                                  0.9,
-                              height:
-                                  MediaQuery.of(context).size.height *
-                                  0.8,
-                              padding: const EdgeInsets.all(
-                                32,
-                              ),
+                              width: MediaQuery.of(context).size.width * 0.9,
+                              height: MediaQuery.of(context).size.height * 0.8,
+                              padding: const EdgeInsets.all(32),
                               decoration: BoxDecoration(
                                 color: (backgroundColor ?? Colors.white)
                                     .withOpacity(0.25),
@@ -641,25 +657,27 @@ class _ArtHomePageState extends State<ArtHomePage>
                                             imageUrl: imageURL,
                                             fit: BoxFit.contain,
                                             fadeInDuration: const Duration(
-                                              milliseconds: 200, // Reduced from 300ms
+                                              milliseconds:
+                                                  200, // Reduced from 300ms
                                             ),
                                             fadeOutDuration: const Duration(
-                                              milliseconds: 100, // Reduced from 150ms
+                                              milliseconds:
+                                                  100, // Reduced from 150ms
                                             ),
                                             imageBuilder:
-                                                (
-                                                  context,
-                                                  imageProvider,
-                                                ) => ClipRRect(
-                                                  borderRadius:
-                                                      BorderRadius.circular(16),
-                                                  child: Image(
-                                                    image: imageProvider,
-                                                    fit: BoxFit.contain,
-                                                    filterQuality:
-                                                        FilterQuality.high,
-                                                  ),
-                                                ),
+                                                (context, imageProvider) =>
+                                                    ClipRRect(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                            16,
+                                                          ),
+                                                      child: Image(
+                                                        image: imageProvider,
+                                                        fit: BoxFit.contain,
+                                                        filterQuality:
+                                                            FilterQuality.high,
+                                                      ),
+                                                    ),
                                             placeholder:
                                                 (context, url) => Container(
                                                   decoration: BoxDecoration(
@@ -738,9 +756,7 @@ class _ArtHomePageState extends State<ArtHomePage>
                                         ),
                                       ),
                                     ),
-                                    const SizedBox(
-                                      width: 32,
-                                    ),
+                                    const SizedBox(width: 32),
                                     Expanded(
                                       flex: 2,
                                       child: SingleChildScrollView(
@@ -780,9 +796,7 @@ class _ArtHomePageState extends State<ArtHomePage>
                                                 ),
                                               ),
                                             ),
-                                            const SizedBox(
-                                              height: 16,
-                                            ),
+                                            const SizedBox(height: 16),
 
                                             Text(
                                               artwork.artist,
@@ -871,7 +885,7 @@ class _ArtHomePageState extends State<ArtHomePage>
   void afterFirstLayout(BuildContext context) {
     // Start loading art immediately
     getRandomArt();
-    
+
     // Show UI after a very short delay
     Future.delayed(const Duration(milliseconds: 100), () {
       if (mounted) {
@@ -885,7 +899,7 @@ class _ArtHomePageState extends State<ArtHomePage>
 
   Future<void> getRandomArt() async {
     if (_isLoadingArt) return; // Prevent multiple simultaneous loads
-    
+
     setState(() {
       _isLoadingArt = true;
       imageVisible = false;
@@ -927,7 +941,6 @@ class _ArtHomePageState extends State<ArtHomePage>
 
       // Process colors in the background without blocking UI
       _processColorsInBackground(artwork.imageUrl);
-
     } catch (e) {
       _setError("Failed to fetch artwork.");
     }
@@ -948,7 +961,9 @@ class _ArtHomePageState extends State<ArtHomePage>
           smallImageProvider,
           size: const Size(100, 100),
         ).timeout(const Duration(seconds: 3)),
-        extractColorsFromImage(smallImageProvider).timeout(const Duration(seconds: 3)),
+        extractColorsFromImage(
+          smallImageProvider,
+        ).timeout(const Duration(seconds: 3)),
       ]);
 
       final palette = colorFutures[0] as PaletteGenerator;
