@@ -1,6 +1,6 @@
 {
   "hosting": {
-    "public": "RandArt",
+    "public": "build/web",
     "ignore": [
       "firebase.json",
       "**/.*",
