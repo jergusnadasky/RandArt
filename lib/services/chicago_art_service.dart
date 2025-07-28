@@ -6,6 +6,12 @@ import 'package:http/http.dart' as http;
 class ChicagoArtService {
   final Random _random = Random();
 
+  //TODO fix image not loading when image is too big
+  /// Fetches a random artwork from the Art Institute of Chicago API.
+  /// EXAMPLE USAGE: https://www.artic.edu/iiif/2/76b5a746-c165-4acd-9b5d-1443df68b42e/full/843,/0/default.jpg
+  /// https://www.artic.edu/artworks/228301/tales-of-ise
+  /// weed these out or skip them 
+
   Future<Artwork?> getRandomArtwork() async {
     try {
       final idResponse = await http.get(

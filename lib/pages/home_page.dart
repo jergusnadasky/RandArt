@@ -26,6 +26,8 @@ class ArtHomePage extends StatefulWidget {
   State<ArtHomePage> createState() => _ArtHomePageState();
 }
 
+//TODO fix image loading when image is too big. 
+
 class _ArtHomePageState extends State<ArtHomePage>
     with AfterLayoutMixin<ArtHomePage> {
   String imageURL = "";
