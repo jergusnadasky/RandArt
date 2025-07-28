@@ -158,6 +158,8 @@ class _ArtHomePageState extends State<ArtHomePage>
                                       maxHeight: 350,
                                     ),
                                     child: MouseRegion(
+                                      cursor: SystemMouseCursors.click,
+
                                       onEnter:
                                           (_) =>
                                               setState(() => _hovering = true),

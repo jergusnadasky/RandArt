@@ -72,8 +72,11 @@ flutter:
   assets:
     - assets/logo_white.png
     - assets/logo_black.png
-    - assets/d7apevh-970a3f31-8739-425a-ace8-785934f39ce7.png
-
+    - assets/GitHub_Invertocat_Dark.png
+    - assets/GitHub_Invertocat_Light.png
+    - assets/InBug-White.png
+    - assets/InBug-Black.png
+    
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
 

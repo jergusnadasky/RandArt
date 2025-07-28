@@ -38,12 +38,21 @@ class AboutPage extends StatelessWidget {
                     print('Could not launch $githubURL');
                   }
                 },
-                child: isDarkColor(bgColor)
-                    ? Image.asset(height: 32, width: 32, "GitHub_Invertocat_Light.png")
-                    : Image.asset(height: 32, width: 32, "GitHub_Invertocat_Dark.png"),
+                child:
+                    isDarkColor(bgColor)
+                        ? Image.asset(
+                          height: 32,
+                          width: 32,
+                          "assets/GitHub_Invertocat_Light.png",
+                        )
+                        : Image.asset(
+                          height: 32,
+                          width: 32,
+                          "assets/GitHub_Invertocat_Dark.png",
+                        ),
               ),
             ),
-            SizedBox(width: 24,),
+            SizedBox(width: 24),
             //linkedInButton
             MouseRegion(
               cursor: SystemMouseCursors.click,
@@ -61,9 +70,18 @@ class AboutPage extends StatelessWidget {
                     print('Could not launch $linkedInURL');
                   }
                 },
-                child: isDarkColor(bgColor)
-                    ? Image.asset(height: 32, width: 32, "InBug-White.png")
-                    : Image.asset(height: 32, width: 32, "InBug-Black.png"),
+                child:
+                    isDarkColor(bgColor)
+                        ? Image.asset(
+                          height: 32,
+                          width: 32,
+                          "assets/InBug-White.png",
+                        )
+                        : Image.asset(
+                          height: 32,
+                          width: 32,
+                          "assets/InBug-Black.png",
+                        ),
               ),
             ),
           ],
@@ -77,18 +95,21 @@ class AboutPage extends StatelessWidget {
         title: GestureDetector(
           onTap: () => Navigator.pop(context),
           child: Center(
-            child: SizedBox(
-              height: 250,
-              child:
-                  isDarkColor(bgColor)
-                      ? Image.asset(
-                        "assets/logo_white.png",
-                        fit: BoxFit.contain,
-                      )
-                      : Image.asset(
-                        "assets/logo_black.png",
-                        fit: BoxFit.contain,
-                      ),
+            child: MouseRegion(
+              cursor: SystemMouseCursors.click,
+              child: SizedBox(
+                height: 250,
+                child:
+                    isDarkColor(bgColor)
+                        ? Image.asset(
+                          "assets/logo_white.png",
+                          fit: BoxFit.contain,
+                        )
+                        : Image.asset(
+                          "assets/logo_black.png",
+                          fit: BoxFit.contain,
+                        ),
+              ),
             ),
           ),
         ),
