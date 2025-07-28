@@ -6,6 +6,7 @@
 .DS_Store
 
 # ========== IDES ==========
+.vscode/
 .idea/
 *.iml
 *.ipr
