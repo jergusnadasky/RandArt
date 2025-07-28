@@ -35,22 +35,7 @@ class AboutPage extends StatelessWidget {
       body: Center(
         child: Column(
           children: [
-            Text(
-              "This is DIN #1234567890",
-              style: TextStyle(fontFamily: 'DIN', fontWeight: FontWeight.w400),
-            ),
-            Text(
-              "This is DIN BOLD #1234567890",
-              style: TextStyle(fontFamily: 'DIN', fontWeight: FontWeight.w700),
-            ),
-            Text("This is Akkurat #1234567890", style: TextStyle(fontFamily: 'Akkurat')),
-            Text(
-              "This is Akkurat BOLD #1234567890",
-              style: TextStyle(
-                fontFamily: 'Akkurat',
-                fontWeight: FontWeight.w700,
-              ),
-            ),
+          
           ],
         ),
       ),
