@@ -1,45 +1,52 @@
-# Miscellaneous
+# ========== GENERAL ==========
 *.class
 *.log
 *.pyc
 *.swp
 .DS_Store
-.atom/
-.build/
-.buildlog/
-.history
-.svn/
-.swiftpm/
-migrate_working_dir/
 
-# IntelliJ related
+# ========== IDES ==========
+.idea/
 *.iml
 *.ipr
 *.iws
-.idea/
+.atom/
+.history
+.vscode/        # Uncomment to ignore VSCode settings
 
-# The .vscode folder contains launch configuration and tasks you configure in
-# VS Code which you may wish to be included in version control, so this line
-# is commented out by default.
-#.vscode/
-
-# Flutter/Dart/Pub related
-**/doc/api/
-**/ios/Flutter/.last_build_id
+# ========== FLUTTER/DART ==========
 .dart_tool/
 .flutter-plugins
 .flutter-plugins-dependencies
 .pub-cache/
 .pub/
-/build/
+build/
+**/build/
+**/doc/api/
+**/ios/Flutter/.last_build_id
 
-# Symbolication related
-app.*.symbols
+# ========== FIREBASE ==========
+.firebase/              # Contains build cache and deployment state
+.firebase/*
 
-# Obfuscation related
-app.*.map.json
-
-# Android Studio will place build artifacts here
+# ========== ANDROID ==========
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# ========== OBSCURE STUFF ==========
+app.*.map.json
+app.*.symbols
+
+# ========== MACOS / LINUX / WINDOWS BUILD FILES ==========
+**/Flutter/ephemeral/
+**/xcshareddata/
+**/xcuserdata/
+**/Assets.xcassets/
+**/Base.lproj/
+windows/flutter/ephemeral/
+linux/flutter/
+macos/Flutter/
+
+# ========== EXCEPTIONS ==========
+!deploy.ps1       # Keep this script tracked
