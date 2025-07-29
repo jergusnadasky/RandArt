@@ -36,9 +36,25 @@ class MetArtService {
         // Skip if no valid image URL
         if (imageUrl == null || imageUrl.isEmpty) continue;
 
-        // Make a HEAD request to validate if image is accessible (e.g., not blocked)
-        final imageCheck = await http.head(Uri.parse(imageUrl));
-        if (imageCheck.statusCode != 200) continue;
+        // Check if image is accessible and handle CORS errors
+        try {
+          final imageCheck = await http.head(Uri.parse(imageUrl));
+          if (imageCheck.statusCode != 200) continue;
+
+          // Additional check: try to make a GET request to ensure the image is truly accessible
+          // This will catch CORS errors that might not appear in HEAD requests
+          final imageTest = await http.get(Uri.parse(imageUrl)).timeout(
+            Duration(seconds: 5),
+            onTimeout: () => throw Exception('Image request timeout'),
+          );
+          
+          if (imageTest.statusCode != 200) continue;
+
+        } catch (e) {
+          // This will catch CORS errors, timeouts, and other network issues
+          print('Image accessibility check failed for $imageUrl: $e');
+          continue; // Skip this artwork and try the next one
+        }
 
         return Artwork(
           title: obj['title'] ?? 'Untitled',
@@ -53,6 +69,7 @@ class MetArtService {
 
       return null;
     } catch (e) {
+      print('General error in getRandomArtwork: $e');
       return null;
     }
   }

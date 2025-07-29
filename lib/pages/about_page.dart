@@ -114,10 +114,96 @@ class AboutPage extends StatelessWidget {
           ),
         ),
       ),
-      body: Center(child: Column(children: [
-          
-          ],
-        )),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'About RandArt',
+            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+          ),
+          SizedBox(height: 16),
+          Text(
+            'RandArt is a minimalist art browser that lets you discover random artworks from major public museum collections. '
+            'It’s meant to be fast, simple, and beautiful—every visit reveals something new.',
+            style: TextStyle(fontSize: 16),
+          ),
+          SizedBox(height: 16),
+          Text(
+            '🎨 Art Sources:',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+          ),
+          SizedBox(height: 8),
+          Text(
+            '• Art Institute of Chicago\n'
+            '• The Met Museum\n\n'
+            'All images and data are publicly available through their APIs.',
+            style: TextStyle(fontSize: 16),
+          ),
+          SizedBox(height: 16),
+          Text(
+            '🛠️ Built With:',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+          ),
+          SizedBox(height: 8),
+          Text(
+            'This app is built using Flutter Web and deployed on Firebase Hosting. '
+            'It fetches and processes artwork data using REST API calls, showcasing real-time interaction with public art collections.',
+            style: TextStyle(fontSize: 16),
+          ),
+          SizedBox(height: 16),
+          Text(
+            '📚 Project Goals:',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+          ),
+          SizedBox(height: 8),
+          Text(
+            'This project helped me practice API integration, dynamic UI design, and asynchronous data handling in Flutter. '
+            'I’m continuously learning and improving the app.',
+            style: TextStyle(fontSize: 16),
+          ),
+          SizedBox(height: 16),
+          Text(
+            '💡 Feedback & Features:',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+          ),
+          SizedBox(height: 8),
+          Text(
+            'Have ideas for features or spotted a bug? I\'m always open to feedback — feel free to reach out!',
+            style: TextStyle(fontSize: 16),
+          ),
+          SizedBox(height: 24),
+          // Optional buttons (GitHub, Contact, etc.)
+          Wrap(
+            spacing: 12,
+            runSpacing: 12,
+            children: [
+              ElevatedButton(
+                onPressed: () {
+                  // Replace with your GitHub repo
+                  launchUrl(
+                    Uri.parse('https://github.com/your-username/randart'),
+                  );
+                },
+                child: Text('View on GitHub'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  // Replace with your live site
+                  launchUrl(Uri.parse('https://randart.web.app'));
+                },
+                child: Text('Try RandArt'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  // Replace with your email or contact form
+                  launchUrl(Uri.parse('mailto:your.email@example.com'));
+                },
+                child: Text('Contact Me'),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }
