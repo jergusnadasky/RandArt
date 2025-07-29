@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:art_gen/pages/home_page.dart';
 import 'package:art_gen/pages/animated_title_screen.dart';
@@ -14,19 +13,15 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: "RandArt",
-      
+
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        fontFamily: 'DIN', //TODO find better font
+        fontFamily: 'DIN',
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: TitleScreen(),//const ArtHomePage("RandArt"),
-      routes: {
-      '/homepage' :(context) => ArtHomePage("RandArt"),
-
-      },
+      home: TitleScreen(),
+      routes: {'/homepage': (context) => ArtHomePage("RandArt")},
     );
   }
 }
-

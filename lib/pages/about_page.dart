@@ -84,6 +84,19 @@ class AboutPage extends StatelessWidget {
                         ),
               ),
             ),
+            SizedBox(width: 16),
+            MouseRegion(
+              cursor: SystemMouseCursors.click,
+              child: GestureDetector(
+                onTap: () {
+                  launchUrl(Uri.parse('mailto:jergusko23@gmail.com'));
+                },
+                child:
+                    isDarkColor(bgColor)
+                        ? Icon(size: 32, Icons.email, color: Colors.white)
+                        : Icon(size: 32, Icons.email, color: Colors.black),
+              ),
+            ),
           ],
         ),
       ),
@@ -114,105 +127,103 @@ class AboutPage extends StatelessWidget {
           ),
         ),
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'About RandArt',
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+      body: Center(
+        child: DefaultTextStyle(
+          style: TextStyle(
+            fontFamily: 'DIN',
+            color: isDarkColor(bgColor) ? Colors.white : Colors.black,
           ),
-          SizedBox(height: 16),
-          Text(
-            'RandArt is a minimalist art browser that lets you discover random artworks from major public museum collections. '
-            'It’s meant to be fast, simple, and beautiful—every visit reveals something new.',
-            style: TextStyle(fontSize: 16),
-          ),
-          SizedBox(height: 16),
-          Text(
-            '🎨 Art Sources:',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-          ),
-          SizedBox(height: 8),
-          Text(
-            '• Art Institute of Chicago\n'
-            '• The Met Museum\n\n'
-            'All images and data are publicly available through their APIs.',
-            style: TextStyle(fontSize: 16),
-          ),
-          SizedBox(height: 16),
-          Text(
-            '🛠️ Built With:',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-          ),
-          SizedBox(height: 8),
-          Text(
-            'This app is built using Flutter Web and deployed on Firebase Hosting. '
-            'It fetches and processes artwork data using REST API calls, showcasing real-time interaction with public art collections.',
-            style: TextStyle(fontSize: 16),
-          ),
-          SizedBox(height: 16),
-          Text(
-            '📚 Project Goals:',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-          ),
-          SizedBox(height: 8),
-          Text(
-            'This project helped me practice API integration, dynamic UI design, and asynchronous data handling in Flutter. '
-            'I’m continuously learning and improving the app.',
-            style: TextStyle(fontSize: 16),
-          ),
-          SizedBox(height: 16),
-          Text(
-            '💡 Feedback & Features:',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-          ),
-          SizedBox(height: 8),
-          Text(
-            'Have ideas for features or spotted a bug? I\'m always open to feedback — feel free to reach out!',
-            style: TextStyle(fontSize: 16),
-          ),
-          SizedBox(height: 24),
-          // Optional buttons (GitHub, Contact, etc.)
-          Wrap(
-            spacing: 12,
-            runSpacing: 12,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              ElevatedButton(
-                onPressed: () {
-                  // Replace with your GitHub repo
-                  launchUrl(
-                    Uri.parse('https://github.com/your-username/randart'),
-                  );
-                },
-                child: Text('View on GitHub'),
+              SizedBox(height: 16),
+              Text(
+                'About RandArt',
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
-              ElevatedButton(
-                onPressed: () {
-                  // Replace with your live site
-                  launchUrl(Uri.parse('https://randart.web.app'));
-                },
-                child: Text('Try RandArt'),
+              SizedBox(height: 16),
+              Text(
+                'RandArt is a minimalist art browser that lets you discover random artworks from major public museum collections. '
+                'It’s meant to be fast, simple, and beautiful—every visit reveals something new.',
+                style: TextStyle(fontSize: 16),
               ),
-              ElevatedButton(
-                onPressed: () {
-                  // Replace with your email or contact form
-                  launchUrl(Uri.parse('mailto:your.email@example.com'));
-                },
-                child: Text('Contact Me'),
+              SizedBox(height: 16),
+              Text(
+                'Art Sources:',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+              ),
+              SizedBox(height: 8),
+              MouseRegion(
+                cursor: SystemMouseCursors.click,
+                child: GestureDetector(
+                  onTap: () {
+                    launchUrl(Uri.parse('https://www.artic.edu/'));
+                  },
+                  child: Text(
+                    'Art Institute of Chicago',
+                    style: TextStyle(
+                      fontSize: 16,
+                      decoration: TextDecoration.underline,
+                    ),
+                  ),
+                ),
+              ),
+              MouseRegion(
+                cursor: SystemMouseCursors.click,
+                child: GestureDetector(
+                  onTap: () {
+                    launchUrl(Uri.parse('https://www.metmuseum.org/'));
+                  },
+                  child: Text(
+                    'The Metropolitan Museum of Art',
+                    style: TextStyle(
+                      fontSize: 16,
+                      decoration: TextDecoration.underline,
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(height: 16),
+              Text(
+                'Built With:',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+              ),
+              SizedBox(height: 8),
+              Text(
+                'This app is built using Flutter Web and deployed on Firebase Hosting. '
+                'It fetches and processes artwork data using REST API calls, showcasing real-time interaction with public art collections.',
+                style: TextStyle(fontSize: 16),
+              ),
+              SizedBox(height: 16),
+              Text(
+                'Project Goals:',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+              ),
+              SizedBox(height: 8),
+              Text(
+                'This project helped me practice API integration, dynamic UI design, and asynchronous data handling in Flutter. '
+                'I’m continuously learning and improving the app.',
+                style: TextStyle(fontSize: 16),
+              ),
+              SizedBox(height: 16),
+              Text(
+                'Feedback & Features:',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+              ),
+              SizedBox(height: 8),
+              Text(
+                'Have ideas for features or spotted a bug? I\'m always open to feedback — feel free to reach out!',
+                style: TextStyle(fontSize: 16),
+              ),
+              SizedBox(height: 150),
+              Text(
+                'Created by Jergus Nadasky',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
               ),
             ],
           ),
-        ],
+        ),
       ),
     );
   }
 }
-
-
-
-
-//  child: Text(
-//           'This app fetches random artworks and displays the title and artist.',
-//           style: TextStyle(color: textColor, fontSize: 18, fontFamily: 'Akkurat'),
-//           textAlign: TextAlign.center,
-//         ),
