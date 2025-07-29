@@ -33,7 +33,9 @@ class MetArtService {
 
         final obj = jsonDecode(objectRes.body);
         final imageUrl = obj['primaryImageSmall'] ?? obj['primaryImage'];
-        if (imageUrl == null || imageUrl.isEmpty) continue;
+
+        // Check if the image URL is valid and skips if not
+        if (imageUrl == null || imageUrl.isEmpty || imageUrl == '') continue;
 
         return Artwork(
           title: obj['title'] ?? 'Untitled',
