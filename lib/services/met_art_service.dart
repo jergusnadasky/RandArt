@@ -8,7 +8,6 @@ class MetArtService {
 
   Future<Artwork?> getRandomArtwork() async {
     try {
-      // Step 1: Search for artworks with images and use a more specific query
       final searchRes = await http.get(
         Uri.parse(
           'https://collectionapi.metmuseum.org/public/collection/v1/search?hasImages=true&q=painting',
@@ -20,8 +19,8 @@ class MetArtService {
       final List<dynamic>? objectIDs = searchJson['objectIDs'];
       if (objectIDs == null || objectIDs.isEmpty) return null;
 
-      // Step 2: Try up to 10 times to find a valid artwork with image
-      for (int i = 0; i < 10; i++) {
+      // Try up to 15 times to find a valid, working image
+      for (int i = 0; i < 15; i++) {
         final id = objectIDs[_random.nextInt(objectIDs.length)];
 
         final objectRes = await http.get(
@@ -34,8 +33,12 @@ class MetArtService {
         final obj = jsonDecode(objectRes.body);
         final imageUrl = obj['primaryImageSmall'] ?? obj['primaryImage'];
 
-        // Check if the image URL is valid and skips if not
-        if (imageUrl == null || imageUrl.isEmpty || imageUrl == '') continue;
+        // Skip if no valid image URL
+        if (imageUrl == null || imageUrl.isEmpty) continue;
+
+        // Make a HEAD request to validate if image is accessible (e.g., not blocked)
+        final imageCheck = await http.head(Uri.parse(imageUrl));
+        if (imageCheck.statusCode != 200) continue;
 
         return Artwork(
           title: obj['title'] ?? 'Untitled',
@@ -44,7 +47,7 @@ class MetArtService {
           link: obj['objectURL'] ?? '',
           description: obj['medium'],
           id: obj['objectID'].toString(),
-          date: obj['objectDate'] ?? '', // Optional date field
+          date: obj['objectDate'] ?? '',
         );
       }
 

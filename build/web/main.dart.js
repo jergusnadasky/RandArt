@@ -38152,7 +38152,7 @@ break}d=h
 g=B.bp.tP(0,A.alR(A.als(d.e).c.a.i(0,"charset")).dh(0,d.w),null)
 c=J.au(g,"primaryImageSmall")
 f=c==null?J.au(g,"primaryImage"):c
-if(f==null||J.fO(f)){s=9
+if(f==null||J.fO(f)||J.d(f,"")){s=9
 break}e=J.au(g,"title")
 if(e==null)e="Untitled"
 d=J.au(g,"artistDisplayName")
