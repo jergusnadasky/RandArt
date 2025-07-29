@@ -10,10 +10,12 @@ class ChicagoArtService {
   /// Fetches a random artwork from the Art Institute of Chicago API.
   /// EXAMPLE USAGE: https://www.artic.edu/iiif/2/76b5a746-c165-4acd-9b5d-1443df68b42e/full/843,/0/default.jpg
   /// https://www.artic.edu/artworks/228301/tales-of-ise
-  /// weed these out or skip them 
+  /// weed these out or skip them
 
   Future<Artwork?> getRandomArtwork() async {
     try {
+      // Fetch a list of artwork IDs
+      // This is a paginated API, so we can fetch a random page
       final idResponse = await http.get(
         Uri.parse(
           'https://api.artic.edu/api/v1/artworks?limit=100&page=${_random.nextInt(100) + 1}&fields=id,image_id,title,artist_title,short_description,date_display,thumbnail',
@@ -27,14 +29,22 @@ class ChicagoArtService {
       final idData = jsonDecode(idResponse.body);
       final List<dynamic> artList = idData['data'];
 
-
-
+      // Checks entire list and filters out artworks without an image_id or no image available
       for (var art in artList) {
         final imageId = art['image_id'];
-        if (imageId == null || imageId.isEmpty) continue;
 
+        // Skip artworks without an image_id or if the image_id is empty
+        if (imageId == null || imageId.isEmpty) continue;
+        // Construct the image URL
         final imageUrl =
             'https://www.artic.edu/iiif/2/$imageId/full/843,/0/default.jpg';
+
+        final imageResponse = await http.get(Uri.parse(imageUrl));
+
+        if (imageResponse.statusCode != 200) {
+          continue; // Skip this artwork if the image is not available
+        } 
+
 
         final artwork = Artwork(
           title: art['title'] ?? 'Untitled',
@@ -43,7 +53,7 @@ class ChicagoArtService {
           link: "https://www.artic.edu/artworks/${art['id']}",
           description: art['short_description'] ?? art['thumbnail']['alt_text'],
           id: art['id'].toString(),
-          date: art['date_display'].toString(), 
+          date: art['date_display'].toString(),
         );
         return artwork;
       }

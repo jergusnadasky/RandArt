@@ -914,7 +914,7 @@ class _ArtHomePageState extends State<ArtHomePage>
       await Future.delayed(const Duration(milliseconds: 100));
     }
 
-    final int apiChoice = randomNum.nextInt(2);
+    final int apiChoice = 0;//randomNum.nextInt(2);
     final ChicagoArtService chicagoService = ChicagoArtService();
     Artwork? artwork;
 
