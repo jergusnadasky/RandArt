@@ -215,7 +215,7 @@ class AboutPage extends StatelessWidget {
                 'Have ideas for features or spotted a bug? I\'m always open to feedback — feel free to reach out!',
                 style: TextStyle(fontSize: 16),
               ),
-              SizedBox(height: 150),
+              SizedBox(height: 50),
               Text(
                 'Created by Jergus Nadasky',
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),

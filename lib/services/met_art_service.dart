@@ -19,8 +19,12 @@ class MetArtService {
       final List<dynamic>? objectIDs = searchJson['objectIDs'];
       if (objectIDs == null || objectIDs.isEmpty) return null;
 
+
+
       // Try up to 15 times to find a valid, working image
       for (int i = 0; i < 15; i++) {
+ 
+
         final id = objectIDs[_random.nextInt(objectIDs.length)];
 
         final objectRes = await http.get(
@@ -41,15 +45,21 @@ class MetArtService {
           final imageCheck = await http.head(Uri.parse(imageUrl));
           if (imageCheck.statusCode != 200) continue;
 
+          // If CORS error occurs, a new artwork request will be made
+          if (i >= 14) {
+            getRandomArtwork();
+          }
+
           // Additional check: try to make a GET request to ensure the image is truly accessible
           // This will catch CORS errors that might not appear in HEAD requests
-          final imageTest = await http.get(Uri.parse(imageUrl)).timeout(
-            Duration(seconds: 5),
-            onTimeout: () => throw Exception('Image request timeout'),
-          );
-          
-          if (imageTest.statusCode != 200) continue;
+          final imageTest = await http
+              .get(Uri.parse(imageUrl))
+              .timeout(
+                Duration(seconds: 5),
+                onTimeout: () => throw Exception('Image request timeout'),
+              );
 
+          if (imageTest.statusCode != 200) continue;
         } catch (e) {
           // This will catch CORS errors, timeouts, and other network issues
           print('Image accessibility check failed for $imageUrl: $e');
