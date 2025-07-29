@@ -22,7 +22,7 @@ Try the app here: [https://randart-v1.web.app](https://randart-v1.web.app)
 ## 🛠️ Tech Stack
 
 - **Frontend:** Flutter Web
-- **APIs:** Art Institute of Chicago API, The Metropolitan Museum of Art API
+- **APIs:** Art Institute of Chicago API, The Metropolitan Museum of Art API (unavailable on mobile)
 - **Hosting:** Firebase
 
 ---

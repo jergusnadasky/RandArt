@@ -1,3 +1,4 @@
+//WEB AND MOBILE 
 import 'dart:convert';
 import 'dart:math';
 import 'package:art_gen/util/artwork.dart';

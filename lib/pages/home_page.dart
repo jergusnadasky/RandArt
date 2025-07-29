@@ -10,6 +10,8 @@ import 'package:http/http.dart' as http;
 import 'package:palette_generator/palette_generator.dart';
 import 'dart:ui';
 import 'package:after_layout/after_layout.dart';
+import 'package:flutter/foundation.dart' show defaultTargetPlatform, TargetPlatform;
+
 
 import 'package:art_gen/util/artwork.dart';
 
@@ -919,7 +921,7 @@ class _ArtHomePageState extends State<ArtHomePage>
     Artwork? artwork;
 
     try {
-      if (apiChoice == 0) {
+      if (isMobile() || apiChoice == 0) {
         artwork = await chicagoService.getRandomArtwork();
       } else {
         artwork = await MetArtService().getRandomArtwork();
@@ -1016,4 +1018,8 @@ Future<void> downloadImageWeb(
 
 bool isDarkColor(Color color) {
   return color.computeLuminance() < 0.5;
+}
+
+bool isMobile() {
+  return defaultTargetPlatform == TargetPlatform.android || defaultTargetPlatform == TargetPlatform.iOS;
 }

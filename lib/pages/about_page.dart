@@ -175,7 +175,7 @@ class AboutPage extends StatelessWidget {
                     launchUrl(Uri.parse('https://www.metmuseum.org/'));
                   },
                   child: Text(
-                    'The Metropolitan Museum of Art',
+                    'The Metropolitan Museum of Art (not available on mobile)',
                     style: TextStyle(
                       fontSize: 16,
                       decoration: TextDecoration.underline,

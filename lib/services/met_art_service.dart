@@ -1,3 +1,5 @@
+//NOT AVAILABLE ON MOBILE
+// This service is designed for web and desktop platforms only
 import 'dart:convert';
 import 'dart:math';
 import 'package:art_gen/util/artwork.dart';
