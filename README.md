@@ -13,7 +13,7 @@ Try the app here: [https://randart-v1.web.app](https://randart-v1.web.app)
 - 🖼️ Random artwork display on each load
 - 🎨 Dynamic background color matching the artwork’s palette
 - 🔍 Displays artwork title and artist name
-- 🌗 Theme-aware GitHub and LinkedIn buttons in the footer
+- 🪞 Features gradient showcasing color composition
 - 🔁 Optimized image loading to reduce flickering and latency
 - 📱 Fully responsive UI built in Flutter
 
