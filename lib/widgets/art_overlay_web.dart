@@ -5,7 +5,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-void showArtworkOverlay(
+void showWebArtworkOverlay(
   BuildContext context,
   Artwork artwork,
   Color? backgroundColor,
@@ -15,7 +15,7 @@ void showArtworkOverlay(
     barrierDismissible: true,
     barrierLabel: 'Artwork Details',
     barrierColor: Colors.black.withOpacity(0.7),
-    transitionDuration: const Duration(milliseconds: 200), // Reduced from 300ms
+    transitionDuration: const Duration(milliseconds: 200), 
     pageBuilder: (context, animation, secondaryAnimation) {
       return Scaffold(
         backgroundColor: Colors.transparent,
@@ -67,11 +67,11 @@ void showArtworkOverlay(
                                           fit: BoxFit.contain,
                                           fadeInDuration: const Duration(
                                             milliseconds:
-                                                200, // Reduced from 300ms
+                                                200, 
                                           ),
                                           fadeOutDuration: const Duration(
                                             milliseconds:
-                                                100, // Reduced from 150ms
+                                                100, 
                                           ),
                                           imageBuilder:
                                               (context, imageProvider) =>
@@ -257,14 +257,14 @@ void showArtworkOverlay(
                       right: 24,
                       child: Container(
                         decoration: BoxDecoration(
-                          color: Colors.black.withOpacity(0.3),
-                          borderRadius: BorderRadius.circular(20),
+                          color: Colors.black.withOpacity(0.4),
+                          borderRadius: BorderRadius.circular(18),
                         ),
                         child: IconButton(
                           icon: const Icon(
                             Icons.close,
                             color: Colors.white,
-                            size: 24,
+                            size: 20,
                           ),
                           onPressed: () => Navigator.of(context).pop(),
                         ),

@@ -3,13 +3,14 @@ import 'package:art_gen/services/art_generator.dart';
 import 'package:art_gen/services/color_service.dart';
 import 'package:art_gen/util/image_downloader.dart';
 import 'package:art_gen/util/is_dark_color.dart';
+import 'package:art_gen/util/is_mobile.dart';
 import 'package:art_gen/widgets/appbar.dart';
+import 'package:art_gen/widgets/art_overlay_mobile.dart';
 import 'package:flutter/services.dart';
 import 'package:art_gen/pages/about_page.dart';
 import 'package:art_gen/services/spectrum_creator.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:palette_generator/palette_generator.dart';
 import 'package:after_layout/after_layout.dart';
 
 import 'package:art_gen/widgets/art_overlay_web.dart';
@@ -149,11 +150,20 @@ class _ArtHomePageState extends State<ArtHomePage>
                                             id: id,
                                             date: _date,
                                           );
-                                          showArtworkOverlay(
-                                            context,
-                                            currentArtwork,
-                                            dominantColor,
-                                          );
+                                          if (isMobile()) {
+                                            showMobileArtworkOverlay(
+                                              context,
+                                              currentArtwork,
+                                              dominantColor,
+                                            );
+                                          } else {
+                                            // Show web overlay
+                                            showWebArtworkOverlay(
+                                              context,
+                                              currentArtwork,
+                                              dominantColor,
+                                            );
+                                          }
                                         },
                                         child: AnimatedScale(
                                           scale: _hovering ? 1.1 : 1.0,
