@@ -22,13 +22,16 @@
 .pub-cache/
 .pub/
 build/
+build/*
 **/build/
 **/doc/api/
 **/ios/Flutter/.last_build_id
 
 # ========== FIREBASE ==========
-.firebase/              # Contains build cache and deployment state
+.firebase/             
 .firebase/*
+.firebase/
+.firebase/hosting.*
 
 # ========== ANDROID ==========
 /android/app/debug
