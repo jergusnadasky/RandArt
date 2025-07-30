@@ -21,6 +21,7 @@
 .flutter-plugins-dependencies
 .pub-cache/
 .pub/
+build/web/
 build/
 build/*
 **/build/
