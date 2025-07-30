@@ -1,5 +1,6 @@
+import 'package:art_gen/util/is_dark_color.dart';
+import 'package:art_gen/widgets/appbar.dart';
 import 'package:flutter/material.dart';
-import 'package:art_gen/pages/home_page.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 //TODO add about page stuff
@@ -101,31 +102,13 @@ class AboutPage extends StatelessWidget {
         ),
       ),
       backgroundColor: bgColor,
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        backgroundColor: bgColor,
-        foregroundColor: textColor,
-        title: GestureDetector(
-          onTap: () => Navigator.pop(context),
-          child: Center(
-            child: MouseRegion(
-              cursor: SystemMouseCursors.click,
-              child: SizedBox(
-                height: 250,
-                child:
-                    isDarkColor(bgColor)
-                        ? Image.asset(
-                          "assets/logo_white.png",
-                          fit: BoxFit.contain,
-                        )
-                        : Image.asset(
-                          "assets/logo_black.png",
-                          fit: BoxFit.contain,
-                        ),
-              ),
-            ),
-          ),
-        ),
+      appBar: CustomAppBar(
+        bgColor: bgColor,
+        textColor: textColor,
+        dominantColor: bgColor,
+        title: title,
+        customWidget: SizedBox.shrink(),
+        onTapFunction: () => Navigator.pop(context),
       ),
       body: Center(
         child: DefaultTextStyle(

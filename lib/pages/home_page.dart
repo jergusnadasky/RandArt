@@ -1,23 +1,20 @@
 import 'dart:math';
+import 'package:art_gen/services/art_generator.dart';
+import 'package:art_gen/services/color_service.dart';
+import 'package:art_gen/util/image_downloader.dart';
+import 'package:art_gen/util/is_dark_color.dart';
+import 'package:art_gen/widgets/appbar.dart';
 import 'package:flutter/services.dart';
 import 'package:art_gen/pages/about_page.dart';
-import 'package:art_gen/services/chicago_art_service.dart';
-import 'package:art_gen/services/met_art_service.dart';
 import 'package:art_gen/services/spectrum_creator.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:palette_generator/palette_generator.dart';
-import 'dart:ui';
 import 'package:after_layout/after_layout.dart';
-import 'package:flutter/foundation.dart' show defaultTargetPlatform, TargetPlatform;
 
+import 'package:art_gen/widgets/art_overlay_web.dart';
 
 import 'package:art_gen/util/artwork.dart';
-
-import 'package:url_launcher/url_launcher.dart';
-
-import 'dart:html' as html;
 
 class ArtHomePage extends StatefulWidget {
   const ArtHomePage(this.title, {super.key});
@@ -27,8 +24,6 @@ class ArtHomePage extends StatefulWidget {
   @override
   State<ArtHomePage> createState() => _ArtHomePageState();
 }
-
-//TODO fix image loading when image is too big. 
 
 class _ArtHomePageState extends State<ArtHomePage>
     with AfterLayoutMixin<ArtHomePage> {
@@ -76,56 +71,29 @@ class _ArtHomePageState extends State<ArtHomePage>
 
     return Scaffold(
       backgroundColor: Colors.transparent,
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(kToolbarHeight),
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 600), // Reduced from 800ms
-          curve: Curves.easeOut,
-          color: bgColor,
-          child: AppBar(
-            automaticallyImplyLeading: false,
-            backgroundColor: Colors.transparent,
-            elevation: 0,
-            foregroundColor: textColor,
-            title: GestureDetector(
-              child: Center(
-                child: SizedBox(
-                  height: 250,
-                  child:
-                      isDarkColor(bgColor)
-                          ? Image.asset(
-                            "assets/logo_white.png",
-                            fit: BoxFit.contain,
-                          )
-                          : Image.asset(
-                            "assets/logo_black.png",
-                            fit: BoxFit.contain,
-                          ),
-                ),
-              ),
-            ),
-            actions: [
-              IconButton(
-                icon: Icon(Icons.pages, color: textColor),
-                onPressed:
-                    () => Navigator.push(
-                      context,
-                      PageRouteBuilder(
-                        pageBuilder:
-                            (context, animation1, animation2) => AboutPage(
-                              bgColor: dominantColor ?? Colors.white,
-                              title: widget.title,
-                            ),
-                        transitionDuration: Duration.zero,
-                        reverseTransitionDuration: Duration.zero,
-                      ),
+      appBar: CustomAppBar(
+        bgColor: bgColor,
+        textColor: textColor,
+        dominantColor: dominantColor,
+        title: widget.title,
+        customWidget: IconButton(
+          icon: Icon(Icons.pages, color: textColor),
+          onPressed: () {
+            Navigator.push(
+              context,
+              PageRouteBuilder(
+                pageBuilder:
+                    (context, animation1, animation2) => AboutPage(
+                      bgColor: dominantColor ?? Colors.white,
+                      title: title,
                     ),
+                transitionDuration: Duration.zero,
+                reverseTransitionDuration: Duration.zero,
               ),
-            ],
-          ),
+            );
+          },
         ),
       ),
-
       body: AnimatedContainer(
         duration: const Duration(milliseconds: 300), // Reduced from 400ms
         curve: Curves.easeOut,
@@ -181,7 +149,7 @@ class _ArtHomePageState extends State<ArtHomePage>
                                             id: id,
                                             date: _date,
                                           );
-                                          _showArtworkOverlay(
+                                          showArtworkOverlay(
                                             context,
                                             currentArtwork,
                                             dominantColor,
@@ -596,297 +564,6 @@ class _ArtHomePageState extends State<ArtHomePage>
     });
   }
 
-  void _showArtworkOverlay(
-    BuildContext context,
-    Artwork artwork,
-    Color? backgroundColor,
-  ) {
-    showGeneralDialog(
-      context: context,
-      barrierDismissible: true,
-      barrierLabel: 'Artwork Details',
-      barrierColor: Colors.black.withOpacity(0.7),
-      transitionDuration: const Duration(
-        milliseconds: 200,
-      ), // Reduced from 300ms
-      pageBuilder: (context, animation, secondaryAnimation) {
-        return Scaffold(
-          backgroundColor: Colors.transparent,
-          body: GestureDetector(
-            behavior: HitTestBehavior.opaque,
-            onTap: () {
-              Navigator.of(context).pop();
-            },
-            child: Center(
-              child: StatefulBuilder(
-                builder: (BuildContext context, StateSetter setModalState) {
-                  return Stack(
-                    children: [
-                      IgnorePointer(
-                        ignoring: false,
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(24),
-                          child: BackdropFilter(
-                            filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-                            child: Container(
-                              width: MediaQuery.of(context).size.width * 0.9,
-                              height: MediaQuery.of(context).size.height * 0.8,
-                              padding: const EdgeInsets.all(32),
-                              decoration: BoxDecoration(
-                                color: (backgroundColor ?? Colors.white)
-                                    .withOpacity(0.25),
-                                borderRadius: BorderRadius.circular(24),
-                                border: Border.all(
-                                  color: Colors.white.withOpacity(0.2),
-                                  width: 2,
-                                ),
-                              ),
-                              child: GestureDetector(
-                                onTap: () {},
-                                child: Row(
-                                  children: [
-                                    Expanded(
-                                      flex: 3,
-                                      child: Container(
-                                        constraints: BoxConstraints(
-                                          maxHeight:
-                                              MediaQuery.of(
-                                                context,
-                                              ).size.height *
-                                              0.7,
-                                        ),
-                                        child: ClipRRect(
-                                          borderRadius: BorderRadius.circular(
-                                            16,
-                                          ),
-                                          child: CachedNetworkImage(
-                                            imageUrl: imageURL,
-                                            fit: BoxFit.contain,
-                                            fadeInDuration: const Duration(
-                                              milliseconds:
-                                                  200, // Reduced from 300ms
-                                            ),
-                                            fadeOutDuration: const Duration(
-                                              milliseconds:
-                                                  100, // Reduced from 150ms
-                                            ),
-                                            imageBuilder:
-                                                (context, imageProvider) =>
-                                                    ClipRRect(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                            16,
-                                                          ),
-                                                      child: Image(
-                                                        image: imageProvider,
-                                                        fit: BoxFit.contain,
-                                                        filterQuality:
-                                                            FilterQuality.high,
-                                                      ),
-                                                    ),
-                                            placeholder:
-                                                (context, url) => Container(
-                                                  decoration: BoxDecoration(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                          16,
-                                                        ),
-                                                    color: (backgroundColor ??
-                                                            Colors.white)
-                                                        .withOpacity(0.2),
-                                                  ),
-                                                  child: Center(
-                                                    child: Column(
-                                                      mainAxisSize:
-                                                          MainAxisSize.min,
-                                                      children: [
-                                                        CircularProgressIndicator(
-                                                          valueColor:
-                                                              AlwaysStoppedAnimation<
-                                                                Color
-                                                              >(Colors.white70),
-                                                        ),
-                                                        const SizedBox(
-                                                          height: 16,
-                                                        ),
-                                                        const Text(
-                                                          'Loading artwork...',
-                                                          style: TextStyle(
-                                                            color:
-                                                                Colors.white70,
-                                                            fontSize: 14,
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                ),
-                                            errorWidget:
-                                                (
-                                                  context,
-                                                  url,
-                                                  error,
-                                                ) => Container(
-                                                  decoration: BoxDecoration(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                          16,
-                                                        ),
-                                                    color: Colors.white
-                                                        .withOpacity(0.1),
-                                                  ),
-                                                  child: const Center(
-                                                    child: Column(
-                                                      mainAxisSize:
-                                                          MainAxisSize.min,
-                                                      children: [
-                                                        Icon(
-                                                          Icons.error_outline,
-                                                          size: 48,
-                                                          color: Colors.white70,
-                                                        ),
-                                                        SizedBox(height: 8),
-                                                        Text(
-                                                          'Failed to load image',
-                                                          style: TextStyle(
-                                                            color:
-                                                                Colors.white70,
-                                                            fontSize: 14,
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    const SizedBox(width: 32),
-                                    Expanded(
-                                      flex: 2,
-                                      child: SingleChildScrollView(
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            InkWell(
-                                              onTap: () async {
-                                                final Uri url = Uri.parse(
-                                                  artworkLink,
-                                                );
-                                                if (await canLaunchUrl(url)) {
-                                                  await launchUrl(
-                                                    url,
-                                                    mode:
-                                                        LaunchMode
-                                                            .externalApplication,
-                                                  );
-                                                } else {
-                                                  print(
-                                                    'Could not launch $url',
-                                                  );
-                                                }
-                                              },
-                                              child: Text(
-                                                artwork.title,
-                                                style: const TextStyle(
-                                                  fontSize: 32,
-                                                  fontWeight: FontWeight.bold,
-                                                  color: Colors.white,
-                                                  decoration:
-                                                      TextDecoration.underline,
-                                                  decorationColor:
-                                                      Colors.white70,
-                                                  height: 1.2,
-                                                ),
-                                              ),
-                                            ),
-                                            const SizedBox(height: 16),
-
-                                            Text(
-                                              artwork.artist,
-                                              style: const TextStyle(
-                                                fontSize: 24,
-                                                color: Colors.white70,
-                                                fontStyle: FontStyle.italic,
-                                              ),
-                                            ),
-
-                                            if (_date != '') ...[
-                                              const SizedBox(height: 12),
-                                              Text(
-                                                _date,
-                                                style: const TextStyle(
-                                                  color: Colors.white60,
-                                                  fontSize: 18,
-                                                ),
-                                              ),
-                                            ],
-
-                                            if (_description != '') ...[
-                                              const SizedBox(height: 24),
-                                              const Text(
-                                                'About this artwork:',
-                                                style: TextStyle(
-                                                  fontSize: 16,
-                                                  fontWeight: FontWeight.w600,
-                                                  color: Colors.white70,
-                                                ),
-                                              ),
-                                              const SizedBox(height: 8),
-                                              Text(
-                                                artwork.description,
-                                                style: const TextStyle(
-                                                  fontSize: 16,
-                                                  color: Colors.white70,
-                                                  height: 1.5,
-                                                ),
-                                              ),
-                                            ],
-
-                                            const SizedBox(height: 32),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-
-                      Positioned(
-                        top: 24,
-                        right: 24,
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.black.withOpacity(0.3),
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: IconButton(
-                            icon: const Icon(
-                              Icons.close,
-                              color: Colors.white,
-                              size: 24,
-                            ),
-                            onPressed: () => Navigator.of(context).pop(),
-                          ),
-                        ),
-                      ),
-                    ],
-                  );
-                },
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
-
   @override
   void afterFirstLayout(BuildContext context) {
     // Start loading art immediately
@@ -904,122 +581,51 @@ class _ArtHomePageState extends State<ArtHomePage>
   }
 
   Future<void> getRandomArt() async {
-    if (_isLoadingArt) return; // Prevent multiple simultaneous loads
+    if (_isLoadingArt) return;
 
     setState(() {
       _isLoadingArt = true;
       imageVisible = false;
     });
 
-    // Only fade out if we already have an image loaded
+    // Optional fade-out if image already exists
     if (imageURL.isNotEmpty) {
       await Future.delayed(const Duration(milliseconds: 100));
     }
 
-    final int apiChoice = randomNum.nextInt(2);
-    final ChicagoArtService chicagoService = ChicagoArtService();
-    Artwork? artwork;
+    final artwork = await ArtLoaderService.fetchRandomArtwork();
 
-    try {
-      if (isMobile() || apiChoice == 0) {
-        artwork = await chicagoService.getRandomArtwork();
-      } else {
-        artwork = await MetArtService().getRandomArtwork();
-      }
-
-      if (artwork == null) {
-        _setError("Failed to fetch artwork.");
-        return;
-      }
-
-      // Set artwork data immediately - this allows image to start loading
-      setState(() {
-        _description = artwork!.description;
-        artworkLink = artwork.link;
-        title = artwork.title;
-        artistName = artwork.artist;
-        imageURL = artwork.imageUrl;
-        _date = artwork.date;
-        dominantColor = Colors.grey.shade300; // Temporary color
-        imageVisible = true; // Show immediately
-        _isLoadingArt = false;
-      });
-
-      // Process colors in the background without blocking UI
-      _processColorsInBackground(artwork.imageUrl);
-    } catch (e) {
+    if (artwork == null) {
       _setError("Failed to fetch artwork.");
+      return;
     }
+
+    // Set new artwork state
+    setState(() {
+      _description = artwork.description;
+      artworkLink = artwork.link;
+      title = artwork.title;
+      artistName = artwork.artist;
+      imageURL = artwork.imageUrl;
+      _date = artwork.date;
+      dominantColor = Colors.grey.shade300;
+      imageVisible = true;
+      _isLoadingArt = false;
+    });
+
+    // Extract background color (async)
+    _processColorsInBackground(artwork.imageUrl);
   }
 
   // Process colors asynchronously without blocking the UI
   void _processColorsInBackground(String imageUrl) async {
-    try {
-      final smallImageProvider = ResizeImage(
-        NetworkImage(imageUrl),
-        width: 100, // Even smaller for faster processing
-        height: 100,
-      );
+    final result = await ColorService.processImageColors(imageUrl);
 
-      // Process colors with a timeout to prevent hanging
-      final colorFutures = await Future.wait([
-        PaletteGenerator.fromImageProvider(
-          smallImageProvider,
-          size: const Size(100, 100),
-        ).timeout(const Duration(seconds: 3)),
-        extractColorsFromImage(
-          smallImageProvider,
-        ).timeout(const Duration(seconds: 3)),
-      ]);
+    if (!mounted || imageURL != imageUrl) return;
 
-      final palette = colorFutures[0] as PaletteGenerator;
-      final extractedColors = colorFutures[1] as List<ColorInfo>;
-
-      // Only update if we're still showing the same image
-      if (mounted && imageURL == imageUrl) {
-        setState(() {
-          dominantColor = palette.dominantColor?.color ?? Colors.white;
-          _extractedColors = extractedColors;
-        });
-      }
-    } catch (e) {
-      // Silently fail color extraction - the image still works
-      if (mounted && imageURL == imageUrl) {
-        setState(() {
-          dominantColor = Colors.white;
-          _extractedColors = [];
-        });
-      }
-    }
+    setState(() {
+      dominantColor = result['dominantColor'] as Color;
+      _extractedColors = result['extractedColors'] as List<ColorInfo>;
+    });
   }
-}
-
-Future<void> downloadImageWeb(
-  String imageUrl,
-  String artist,
-  String title,
-) async {
-  final response = await http.get(Uri.parse(imageUrl));
-
-  if (response.statusCode == 200) {
-    final bytes = response.bodyBytes;
-    final blob = html.Blob([bytes]);
-    final url = html.Url.createObjectUrlFromBlob(blob);
-
-    html.AnchorElement(href: url)
-      ..setAttribute("download", "$artist-$title.jpg")
-      ..click();
-
-    html.Url.revokeObjectUrl(url);
-  } else {
-    print('Failed to download image.');
-  }
-}
-
-bool isDarkColor(Color color) {
-  return color.computeLuminance() < 0.5;
-}
-
-bool isMobile() {
-  return defaultTargetPlatform == TargetPlatform.android || defaultTargetPlatform == TargetPlatform.iOS;
 }
