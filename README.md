@@ -1,5 +1,8 @@
 # 🎨 RandArt
 
+#### Author: Jergus Nadasky
+Ownership: All core ideas, code strucuture, and design are original and belong to the author. Collaboration is welcome, but credit must be given.
+
 RandArt is a Flutter web application that fetches and displays random pieces of artwork using public APIs from the Art Institute of Chicago and The Met Museum.
 
 ## 🌐 Live Demo
