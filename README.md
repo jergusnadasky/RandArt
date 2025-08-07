@@ -60,5 +60,3 @@ Feel free to open an issue or reach out with suggestions!
 - 👨‍💼 [LinkedIn](https://www.linkedin.com/in/jergusnadasky)
 
 ---
-
-#test1
